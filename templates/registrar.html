@@ -1,0 +1,585 @@
+{% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <p class="message message-{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INFOSENA - Registro</title>
+    <link rel="icon" href="{% static 'img/logo2.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://www.elpais.com.co/resizer/v2/BECP34CL7RBD5LVFMCHQR6VN3I.jpeg?auth=e1104821a501230c6a85f5c506f0f5c9b5fe52ce6e14f9730027c39a916ea841&smart=true&quality=75&width=1280&height=720') center/cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages-container {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .message-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .message-error {
+            background: #f44336;
+            color: white;
+        }
+
+        .message-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .message-info {
+            background: #2196F3;
+            color: white;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(to right, #004d00, #1b9e00);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .imagen-pequena {
+            width: 230px;
+            height: auto;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2d5f2e;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+        }
+
+        .back-icon {
+            width: 30px;
+            height: 30px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .form-title {
+            color: #2d5f2e;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 12px 15px;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #4CAF50;
+        }
+
+        .input-wrapper.has-select::after {
+            content: "▼";
+            position: absolute;
+            right: 15px;
+            font-size: 12px;
+            color: #888;
+            pointer-events: none;
+        }
+
+        .input-icon {
+            font-size: 24px;
+            color: #333;
+            margin-right: 12px;
+        }
+
+        .custom-select,
+        .custom-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            background: transparent;
+            appearance: none;
+            width: 100%;
+        }
+
+        .custom-select {
+            padding-right: 25px;
+        }
+
+        .rol-form {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .submit-button {
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .help-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .help-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            border: 2px solid #4CAF50;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .help-link a:hover {
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            {% load static %}
+            <span><img src="{% static 'img/logo2.png' %}" alt="INFOSENA" class="imagen-pequena" /></span>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="login-card">
+            <div class="card-header">
+                <div class="back-button" onclick="window.history.back()">
+                    <div class="back-icon">↩</div>
+                    <span>Regresar</span>
+                </div>
+                <div class="logo">
+                    <span><img src="{% static 'img/logo.png' %}" alt="INFOSENA" class="imagen-pequena" /></span>
+                </div>
+            </div>
+
+            <!-- Selector de rol -->
+            <div class="form-group">
+                <label for="rolSelect">Selecciona tu rol:</label>
+                <div class="input-wrapper has-select">
+                    <select id="rolSelect" class="custom-select" required>
+                        <option value="" disabled selected>Selecciona tu rol</option>
+                        <option value="bienestar">Bienestar</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="aprendiz">Aprendiz</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- FORMULARIO INSTRUCTOR -->
+            <form id="form-instructor" class="rol-form" method="POST" action="{% url 'registro:registro' %}">
+
+                {% csrf_token %}
+                <input type="hidden" name="rol" value="instructor" />
+                <h3 class="form-title">Registro Instructor</h3>
+
+                <div class="form-group">
+                    <label>Centro formativo:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="centro_formativo" class="custom-select" required>
+                            <option value="" disabled selected>Centro formativo</option>
+                            <option value="centro1">CENTRO AGROEMPRESARIAL Y DESARROLLO PECUARIO DEL HUILA</option>
+                            <option value="centro2">CENTRO DE DESARROLLO AGROEMPRESARIAL Y TURÍSTICO DEL HUILA</option>
+                            <option value="centro3">CENTRO DE FORMACIÓN AGROINDUSTRIAL</option>
+                            <option value="centro4">CENTRO DE GESTIÓN Y DESARROLLO SOSTENIBLE SURCOLOMBIANO</option>
+                            <option value="centro5">CENTRO DE LA INDUSTRIA, LA EMPRESA Y LOS SERVICIOS​</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de documento:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="tipo_documento" class="custom-select" required>
+                            <option value="" disabled selected>Tipo de documento</option>
+                            <option value="cc">Cédula de Ciudadanía</option>
+                            <option value="ti">Tarjeta de Identidad</option>
+                            <option value="ce">Cédula de Extranjería</option>
+                            <option value="pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Región:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="region" class="custom-select" required>
+                            <option value="" disabled selected>Región</option>
+                            <option value="region1">HUILA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre completo:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nombre" class="custom-input" placeholder="Nombre del instructor" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de documento:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="numero_documento" class="custom-input" placeholder="Número del documento" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" class="custom-input" placeholder="Contraseña" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" class="custom-input" placeholder="Email" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Registrar</button>
+            </form>
+
+            <!-- FORMULARIO BIENESTAR -->
+            <form id="form-bienestar" class="rol-form" method="POST" action="{% url 'registro:registro' %}">
+                {% csrf_token %}
+                <input type="hidden" name="rol" value="bienestar" />
+                <h3 class="form-title">Registro Bienestar</h3>
+
+                <div class="form-group">
+                    <label>Centro formativo:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="centro_formativo" class="custom-select" required>
+                            <option value="" disabled selected>Centro formativo</option>
+                            <option value="centro1">CENTRO AGROEMPRESARIAL Y DESARROLLO PECUARIO DEL HUILA</option>
+                            <option value="centro2">CENTRO DE DESARROLLO AGROEMPRESARIAL Y TURÍSTICO DEL HUILA</option>
+                            <option value="centro3">CENTRO DE FORMACIÓN AGROINDUSTRIAL</option>
+                            <option value="centro4">CENTRO DE GESTIÓN Y DESARROLLO SOSTENIBLE SURCOLOMBIANO</option>
+                            <option value="centro5">CENTRO DE LA INDUSTRIA, LA EMPRESA Y LOS SERVICIOS​</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de documento:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="tipo_documento" class="custom-select" required>
+                            <option value="" disabled selected>Tipo de documento</option>
+                            <option value="cc">Cédula de Ciudadanía</option>
+                            <option value="ti">Tarjeta de Identidad</option>
+                            <option value="ce">Cédula de Extranjería</option>
+                            <option value="pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Región:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="region" class="custom-select" required>
+                            <option value="" disabled selected>Región</option>
+                            <option value="region1">HUILA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre completo:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nombre" class="custom-input" placeholder="Nombre completo" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de documento:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="numero_documento" class="custom-input" placeholder="Número del documento" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" class="custom-input" placeholder="Contraseña" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" class="custom-input" placeholder="Email" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Registrar</button>
+            </form>
+
+            <!-- FORMULARIO APRENDIZ -->
+            <form id="form-aprendiz" class="rol-form" method="POST" action="{% url 'registro:registro' %}">
+                {% csrf_token %}
+                <input type="hidden" name="rol" value="aprendiz" />
+                <h3 class="form-title">Registro Aprendiz</h3>
+
+                <div class="form-group">
+                    <label>Centro formativo:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="centro_formativo" class="custom-select" required>
+                            <option value="" disabled selected>Centro formativo</option>
+                            <option value="centro_agroempresarial_y_desarrollo_pecuario_del_huila">CENTRO AGROEMPRESARIAL Y DESARROLLO PECUARIO DEL HUILA</option>
+                            <option value="centro_de_desarrollo_agroempresarial_y_turistico_del_huila">CENTRO DE DESARROLLO AGROEMPRESARIAL Y TURÍSTICO DEL HUILA</option>
+                            <option value="centro_de_formacion_agroindustrial">CENTRO DE FORMACIÓN AGROINDUSTRIAL</option>
+                            <option value="centro_de_gestion_y_desarrollo_sostenible_surcolombiano">CENTRO DE GESTIÓN Y DESARROLLO SOSTENIBLE SURCOLOMBIANO</option>
+                            <option value="centro_de_la_industria_la_empresa_y_los_servicios">CENTRO DE LA INDUSTRIA, LA EMPRESA Y LOS SERVICIOS​</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de documento:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="tipo_documento" class="custom-select" required>
+                            <option value="" disabled selected>Tipo de documento</option>
+                            <option value="cc">Cédula de Ciudadanía</option>
+                            <option value="ti">Tarjeta de Identidad</option>
+                            <option value="ce">Cédula de Extranjería</option>
+                            <option value="pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Región:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="region" class="custom-select" required>
+                            <option value="" disabled selected>Región</option>
+                            <option value="huila">HUILA</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="form-group">
+                    <label>Jornada:</label>
+                    <div class="input-wrapper has-select">
+                        <select name="jornada" class="custom-select" required>
+                            <option value="" disabled selected>Jornada</option>
+                            <option value="manana">Mañana</option>
+                            <option value="tarde">Tarde</option>
+                            <option value="noche">Noche</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre completo:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nombre" class="custom-input" placeholder="Nombre completo" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de documento:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="numero_documento" class="custom-input" placeholder="Número del documento" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" class="custom-input" placeholder="Contraseña" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" class="custom-input" placeholder="Email" required />
+                    </div>
+                </div>
+                    <div class="form-group">
+                    <label>Numero de Ficha:</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="ficha" class="custom-input" placeholder="Ficha" required />
+                    </div>
+                </div>
+                <button type="submit" class="submit-button">Registrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const rolSelect = document.getElementById('rolSelect');
+        const forms = document.querySelectorAll('.rol-form');
+
+        rolSelect.addEventListener('change', function () {
+            const selected = this.value;
+            forms.forEach(form => {
+                form.style.display = form.querySelector('input[name="rol"]').value === selected ? 'block' : 'none';
+            });
+        });
+
+        // Mostrar el formulario correcto si ya hay valor en el select
+        if (rolSelect.value) {
+            rolSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Auto-ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                msg.style.transition = 'opacity 0.5s';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+
+</html>
