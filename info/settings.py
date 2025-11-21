@@ -49,6 +49,16 @@ INSTALLED_APPS = [
     'applications.registro',
     'applications.sesion',
     'applications.index',
+    'applications.usuarios',
+    'applications.publicaciones',
+    'applications.comentarios',
+    'applications.reacciones',
+    'applications.grupos',
+    'applications.miembros_grupo',
+    'applications.amistades',
+    'applications.chat',
+    'applications.mensaje',
+    'applications.ficha',
 ]
 
 MIDDLEWARE = [
