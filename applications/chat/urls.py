@@ -24,4 +24,7 @@ urlpatterns = [
     path('api/silenciar/<int:chat_id>/',          views.silenciar_chat,                  name='silenciar_chat'),
     path('api/buscar/<int:chat_id>/',             views.buscar_mensajes,                 name='buscar_mensajes'),
     path('api/eliminar-mensajes/<int:chat_id>/',  views.eliminar_mensajes_seleccionados, name='eliminar_mensajes_seleccionados'),
+    path('api/salir-grupo/<int:chat_id>/',    views.salir_grupo,    name='salir_grupo'),
+    path('api/eliminar-grupo/<int:chat_id>/', views.eliminar_grupo, name='eliminar_grupo'),
+    path('api/agregar-participantes/<int:chat_id>/', views.agregar_participantes, name='agregar_participantes'),
 ]

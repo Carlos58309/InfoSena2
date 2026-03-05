@@ -152,14 +152,15 @@
             }
             .chat-main.slide-in { transform: translateX(0); }
             .info-panel-mobile {
-                position: fixed !important;
-                top: 0; left: 0; right: 0; bottom: 0;
-                width: 100% !important; z-index: 30;
-                transform: translateX(100%);
-                transition: transform .3s cubic-bezier(.4,0,.2,1);
-                display: flex !important; flex-direction: column;
+                position: fixed !important; top: 0 !important; left: 0 !important;
+                right: 0 !important; bottom: 0 !important; width: 100% !important;
+                z-index: 30 !important; transform: translateX(100%) !important;
+                transition: transform .3s cubic-bezier(.4,0,.2,1) !important;
+                background: white !important;
             }
-            .info-panel-mobile.slide-in { transform: translateX(0); }
+            .info-panel-mobile.slide-in { transform: translateX(0) !important; }
+            .info-panel-mobile:not(.slide-in) { display: none !important; }
+            .info-panel-mobile.slide-in { display: flex !important; }
             .chat-input-bar { padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; }
             .mobile-header  { padding-top: max(12px, env(safe-area-inset-top)) !important; }
             .chat-filters   { display: flex !important; }
@@ -168,7 +169,6 @@
             .sidebar-list   { padding-bottom: 70px !important; }
             .msg-bubble-wrap { max-width: 80% !important; }
             .mobile-back-btn { display: flex !important; }
-            #contactInfoPanel { display: none !important; }
             body { padding-bottom: 70px; }
         }
         @media (min-width: 769px) {
@@ -231,7 +231,36 @@
         </div>
     </div>
 </div>
+<!-- ─── Modal agregar participantes ────────────────────────── -->
+<div id="agregarParticipantesModal" class="hidden fixed inset-0 z-[9998] flex items-center justify-center modal-overlay px-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm pointer-events-auto flex flex-col overflow-hidden max-h-[80vh]">
+        <div class="sidebar-header px-5 py-4 flex items-center gap-3 flex-shrink-0">
+            <button onclick="cerrarModalAgregar()" class="w-8 h-8 flex items-center justify-center text-white hover:bg-white/15 rounded-full transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="text-[15px] font-semibold text-white">Agregar participantes</h3>
+        </div>
 
+        <!-- Búsqueda -->
+        <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100 flex-shrink-0">
+            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="buscarAmigoAgregar" type="text" placeholder="Buscar amigo…"
+                   class="flex-1 text-sm outline-none text-gray-800 placeholder-gray-400">
+        </div>
+
+        <!-- Lista de amigos disponibles -->
+        <div id="listaAmigosAgregar" class="flex-1 overflow-y-auto py-1"></div>
+
+        <!-- Footer -->
+        <div class="px-4 py-3 border-t border-gray-100 flex-shrink-0 flex items-center justify-between gap-3">
+            <span class="text-xs text-gray-400"><span id="countAgregarSeleccionados">0</span> seleccionados</span>
+            <button onclick="confirmarAgregarParticipantes()"
+                    class="px-5 py-2 bg-[#2b9e15] hover:bg-[#1a6b09] text-white text-sm font-semibold rounded-xl transition">
+                Agregar
+            </button>
+        </div>
+    </div>
+</div>
 <!-- ─── Search in chat modal ────────────────────────────────── -->
 <div id="searchMsgModal" class="hidden fixed inset-0 z-[9997] flex items-start justify-center pt-16 modal-overlay px-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[65vh] flex flex-col pointer-events-auto overflow-hidden">
@@ -392,7 +421,7 @@
                onclick="abrirChat('{% url 'chat:chat_room' item.chat.id %}')"
                data-chat-name="{{ item.nombre }}"
                data-no-leidos="{{ item.mensajes_no_leidos|default:0 }}"
-               data-es-grupo="{{ item.chat.es_grupo|yesno:'true,false' }}"
+               data-es-grupo="{% if item.es_grupo %}true{% else %}false{% endif %}"
                class="chat-row flex items-center gap-3 px-4 py-3 border-b border-gray-50 transition cursor-pointer {% if item.activo %}chat-row-active{% endif %}">
                 <div class="relative flex-shrink-0">
                     {% if item.foto %}
@@ -574,12 +603,30 @@
                             Vaciar mensajes
                         </button>
                         <div class="mx-3 border-t border-gray-100 my-1"></div>
-                        <button onclick="eliminarChat(); closeAllDropdowns();" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition text-left">
-                            <span class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </span>
-                            Eliminar chat
-                        </button>
+                        <div class="mx-3 border-t border-gray-100 my-1"></div>
+{% if is_group %}
+    {% if es_admin_grupo %}
+    <button onclick="eliminarGrupo(); closeAllDropdowns();" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition text-left">
+        <span class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </span>
+        Eliminar grupo
+    </button>
+    {% endif %}
+    <button onclick="salirGrupo(); closeAllDropdowns();" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-orange-600 hover:bg-orange-50 transition text-left">
+        <span class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </span>
+        Salir del grupo
+    </button>
+{% else %}
+    <button onclick="eliminarChat(); closeAllDropdowns();" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition text-left">
+        <span class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </span>
+        Eliminar chat
+    </button>
+{% endif %}
                     </div>
                 </div>
             </div>
@@ -653,6 +700,11 @@
         <!-- ══════════════════════════════════════════════════════
              INPUT DE MENSAJE — attachBtn FUERA del <form>
         ══════════════════════════════════════════════════════ -->
+        {% if is_group and not es_participante_activo %}
+<div class="bg-gray-50 border-t border-gray-200 px-4 py-4 flex-shrink-0 text-center">
+    <p class="text-sm text-gray-400 italic">Ya no eres participante de este grupo. No puedes enviar mensajes.</p>
+</div>
+{% else %}
         <div class="bg-white border-t border-gray-200 px-3 py-2.5 flex-shrink-0 chat-input-bar">
             <div class="flex items-end gap-2 max-w-3xl mx-auto">
 
@@ -731,7 +783,7 @@
 
             </div>
         </div>
-
+        {% endif %}
         {% else %}
         <div class="no-chat-placeholder flex-1 flex flex-col items-center justify-center chat-bg">
             <div class="text-center max-w-xs">
@@ -839,13 +891,37 @@
             {% endfor %}
         </div>
         {% endif %}
-        <div class="p-4 mt-auto">
-            <button onclick="eliminarChat()"
-                    class="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 border border-red-200 rounded-xl py-2.5 text-sm font-medium transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                Eliminar chat
-            </button>
-        </div>
+        <div class="p-4 mt-auto flex flex-col gap-2">
+    {% if is_group %}
+    {% if es_admin_grupo %}
+<div class="px-4 pb-2">
+    <button onclick="abrirModalAgregar()"
+            class="w-full flex items-center justify-center gap-2 text-[#2b9e15] hover:bg-[#e8f5e4] border border-[#2b9e15] rounded-xl py-2.5 text-sm font-medium transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Agregar participantes
+    </button>
+</div>
+{% endif %}
+        {% if es_admin_grupo %}
+        <button onclick="eliminarGrupo()"
+                class="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 border border-red-200 rounded-xl py-2.5 text-sm font-medium transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Eliminar grupo
+        </button>
+        {% endif %}
+        <button onclick="salirGrupo()"
+                class="w-full flex items-center justify-center gap-2 text-orange-600 hover:bg-orange-50 border border-orange-200 rounded-xl py-2.5 text-sm font-medium transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Salir del grupo
+        </button>
+    {% else %}
+        <button onclick="eliminarChat()"
+                class="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 border border-red-200 rounded-xl py-2.5 text-sm font-medium transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            Eliminar chat
+        </button>
+    {% endif %}
+</div>
     </div>
     {% endif %}
 
@@ -948,14 +1024,27 @@ function toggleContactInfo() {
     const panel = document.getElementById('contactInfoPanel');
     if (!panel) return;
     _infoPanelOpen = !_infoPanelOpen;
+
     if (isMobile()) {
-        panel.classList.remove('hidden');
-        panel.style.display = 'flex';
-        setTimeout(() => panel.classList.toggle('slide-in', _infoPanelOpen), 10);
-        if (!_infoPanelOpen) setTimeout(() => { panel.style.display = 'none'; }, 300);
+        // En móvil: deslizar desde la derecha cubriendo toda la pantalla
+        if (_infoPanelOpen) {
+            panel.style.display = 'flex';
+            panel.style.flexDirection = 'column';
+            // Forzar reflow antes de agregar la clase
+            void panel.offsetWidth;
+            panel.classList.add('slide-in');
+        } else {
+            panel.classList.remove('slide-in');
+            setTimeout(() => { panel.style.display = 'none'; }, 300);
+        }
     } else {
-        panel.classList.toggle('hidden', !_infoPanelOpen);
-        panel.classList.toggle('flex', _infoPanelOpen);
+        // En desktop: mostrar/ocultar como columna lateral
+        if (_infoPanelOpen) {
+            panel.style.display = 'flex';
+            panel.style.flexDirection = 'column';
+        } else {
+            panel.style.display = 'none';
+        }
     }
 }
 
@@ -1013,6 +1102,151 @@ function vaciarMensajes() {
         }
     );
 }
+// ── Agregar participantes ─────────────────────────────────────
+const _participantesActuales = new Set([
+    {% for p in chat.participantes.all %}{{ p.id }},{% endfor %}
+]);
+const _amigosDisponibles = [
+    {% for amigo in amigos %}
+    {
+        id: {{ amigo.id }},
+        nombre: "{{ amigo.nombre|escapejs }}",
+        foto: "{% if amigo.foto %}{{ amigo.foto.url }}{% endif %}"
+    },
+    {% endfor %}
+];
+let _seleccionadosParaAgregar = new Set();
+
+function abrirModalAgregar() {
+    _seleccionadosParaAgregar.clear();
+    document.getElementById('buscarAmigoAgregar').value = '';
+    document.getElementById('countAgregarSeleccionados').textContent = '0';
+    renderListaAmigosAgregar('');
+    document.getElementById('agregarParticipantesModal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('buscarAmigoAgregar').focus(), 100);
+}
+
+function cerrarModalAgregar() {
+    document.getElementById('agregarParticipantesModal').classList.add('hidden');
+}
+
+function renderListaAmigosAgregar(filtro) {
+    const lista = document.getElementById('listaAmigosAgregar');
+    const disponibles = _amigosDisponibles.filter(a =>
+        !_participantesActuales.has(a.id) &&
+        a.nombre.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    if (!disponibles.length) {
+        lista.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">
+            ${filtro ? 'Sin resultados' : 'Todos tus amigos ya están en el grupo'}
+        </p>`;
+        return;
+    }
+
+    lista.innerHTML = disponibles.map(a => {
+        const checked = _seleccionadosParaAgregar.has(a.id);
+        const avatar = a.foto
+            ? `<img src="${a.foto}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">`
+            : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#2b9e15] to-[#56e03a] flex items-center justify-center text-white font-bold flex-shrink-0">${a.nombre[0].toUpperCase()}</div>`;
+        return `
+        <label class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition border-b border-gray-50 last:border-0">
+            <input type="checkbox" class="amigo-agregar-check w-4 h-4 accent-[#2b9e15]"
+                   data-id="${a.id}" ${checked ? 'checked' : ''} onchange="toggleAmigoAgregar(this)">
+            ${avatar}
+            <span class="text-sm font-medium text-gray-800 flex-1 truncate">${escapeHtml(a.nombre)}</span>
+        </label>`;
+    }).join('');
+}
+
+function toggleAmigoAgregar(cb) {
+    const id = parseInt(cb.dataset.id);
+    if (cb.checked) _seleccionadosParaAgregar.add(id);
+    else _seleccionadosParaAgregar.delete(id);
+    document.getElementById('countAgregarSeleccionados').textContent = _seleccionadosParaAgregar.size;
+}
+
+document.getElementById('buscarAmigoAgregar')?.addEventListener('input', function() {
+    renderListaAmigosAgregar(this.value);
+});
+
+function confirmarAgregarParticipantes() {
+    if (!_seleccionadosParaAgregar.size) {
+        showToast('Selecciona al menos un amigo', 'warning');
+        return;
+    }
+    fetch(`/chat/api/agregar-participantes/${chatId}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+        body: JSON.stringify({ participante_ids: [..._seleccionadosParaAgregar] })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            d.agregados.forEach(u => _participantesActuales.add(u.id));
+            cerrarModalAgregar();
+            showToast(d.message, 'success');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(d.error || 'Error al agregar', 'error');
+        }
+    })
+    .catch(() => showToast('Error de conexión', 'error'));
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('agregarParticipantesModal')?.addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalAgregar();
+});
+// ── Salir del grupo ───────────────────────────────────────────
+function salirGrupo() {
+    const esAdmin = {{ es_admin_grupo|yesno:"true,false" }};
+    const msg = esAdmin
+        ? '¿Salir del grupo? Como admin, el rol pasará al miembro más antiguo.'
+        : '¿Salir del grupo? Ya no podrás ver los mensajes nuevos ni enviar mensajes.';
+    showModal('Salir del grupo', msg, 'Salir', true, () => {
+        fetch(`/chat/api/salir-grupo/{{ chat.id }}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showToast(d.message, 'success');
+                setTimeout(() => window.location.href = "{% url 'chat:lista_chats' %}", 800);
+            } else {
+                showToast(d.error || 'Error al salir del grupo', 'error');
+            }
+        })
+        .catch(() => showToast('Error de conexión', 'error'));
+    });
+}
+
+// ── Eliminar grupo (solo admin) ───────────────────────────────
+function eliminarGrupo() {
+    showModal(
+        'Eliminar grupo',
+        '¿Eliminar el grupo permanentemente? Todos los participantes perderán acceso.',
+        'Eliminar grupo', true,
+        () => {
+            fetch(`/chat/api/eliminar-grupo/{{ chat.id }}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    showToast('Grupo eliminado', 'success');
+                    setTimeout(() => window.location.href = "{% url 'chat:lista_chats' %}", 800);
+                } else {
+                    showToast(d.error || 'Error al eliminar el grupo', 'error');
+                }
+            })
+            .catch(() => showToast('Error de conexión', 'error'));
+        }
+    );
+}
+
 
 // ── Eliminar chat ─────────────────────────────────────────────
 function eliminarChat() {

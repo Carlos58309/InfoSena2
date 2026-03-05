@@ -109,6 +109,7 @@ def lista_chats(request):
             "ultimo_mensaje": ultimo_msg,
             "mensajes_no_leidos": c.mensajes_no_leidos_para_usuario(usuario_actual),
             "activo": False,
+            "es_grupo": c.is_group,
         })
 
     context = {
@@ -155,6 +156,7 @@ def chat_room(request, chat_id):
             "ultimo_mensaje": c.ultimo_mensaje_para_usuario(usuario_actual),
             "mensajes_no_leidos": c.mensajes_no_leidos_para_usuario(usuario_actual),
             "activo": c.id == chat.id,
+            "es_grupo": c.is_group,
         })
 
     # Obtener el otro usuario en chat individual (para panel de info)
@@ -170,7 +172,8 @@ def chat_room(request, chat_id):
             silenciado = ChatSilenciado.esta_silenciado(usuario=usuario_actual, emisor=otro_usuario)
         except Exception:
             pass
-
+    es_participante_activo = chat.participantes.filter(id=usuario_actual.id).exists()
+    es_admin_grupo = chat.is_group and chat.admin_grupo == usuario_actual
     context = {
         "usuario": usuario_actual,
         "chat": chat,
@@ -181,6 +184,9 @@ def chat_room(request, chat_id):
         "is_group": chat.is_group,
         "otro_usuario": otro_usuario,
         "silenciado": silenciado,
+        "es_participante_activo": es_participante_activo,
+        "es_admin_grupo": es_admin_grupo,
+        "amigos": Amistad.obtener_amigos(usuario_actual),
     }
     return render(request, "chat.html", context)
 
@@ -244,9 +250,10 @@ def crear_grupo(request):
         return redirect("sesion:home")
 
     if request.method == "POST":
-        nombre_grupo = request.POST.get("nombre_grupo", "").strip()
-        descripcion = request.POST.get("descripcion", "").strip()
+        nombre_grupo      = request.POST.get("nombre_grupo", "").strip()
+        descripcion       = request.POST.get("descripcion", "").strip()
         participantes_ids = request.POST.getlist("participantes")
+        foto_grupo        = request.FILES.get("foto_grupo")   # ← NUEVO
 
         if not nombre_grupo:
             messages.error(request, "El nombre del grupo es obligatorio.")
@@ -263,16 +270,27 @@ def crear_grupo(request):
             messages.error(request, "La descripción contiene contenido inapropiado.")
             return redirect("chat:crear_grupo")
 
+        # Crear el grupo
         grupo = Chat.crear_grupo(
             nombre=nombre_grupo,
             admin=usuario_actual,
             participantes_ids=participantes_ids,
             descripcion=descripcion,
         )
+
+        # ── Guardar foto si se subió ──────────────────────────────────────────
+        if foto_grupo:
+            grupo.foto_grupo = foto_grupo
+            grupo.save(update_fields=["foto_grupo"])
+        # ─────────────────────────────────────────────────────────────────────
+
         messages.success(request, f"Grupo '{nombre_grupo}' creado exitosamente.")
         return redirect("chat:chat_room", chat_id=grupo.id)
 
-    context = {"usuario": usuario_actual, "amigos": Amistad.obtener_amigos(usuario_actual)}
+    context = {
+        "usuario": usuario_actual,
+        "amigos": Amistad.obtener_amigos(usuario_actual),
+    }
     return render(request, "crear_grupo.html", context)
 
 
@@ -660,3 +678,125 @@ def obtener_archivos_compartidos(request, chat_id):
         return JsonResponse({"success": True, "archivos": archivos, "total": len(archivos)})
     except Chat.DoesNotExist:
         return JsonResponse({"error": "Chat no encontrado"}, status=404)
+
+@require_POST
+def salir_grupo(request, chat_id):
+    usuario_actual = obtener_usuario_actual(request)
+    if not usuario_actual:
+        return JsonResponse({"error": "Usuario no identificado"}, status=403)
+
+    try:
+        chat = Chat.objects.get(id=chat_id, participantes=usuario_actual)
+    except Chat.DoesNotExist:
+        return JsonResponse({"error": "Grupo no encontrado"}, status=404)
+
+    if not chat.is_group:
+        return JsonResponse({"error": "No es un grupo"}, status=400)
+
+    es_admin = chat.admin_grupo == usuario_actual
+
+    # Registrar el momento en que salió para no ver mensajes posteriores
+    ChatVaciadoPorUsuario.objects.update_or_create(
+        chat=chat,
+        usuario=usuario_actual,
+        defaults={"vaciado_en": timezone.now()}
+    )
+
+    # Quitar al usuario del grupo
+    chat.participantes.remove(usuario_actual)
+
+    participantes_restantes = chat.participantes.count()
+
+    if participantes_restantes == 0:
+        chat.delete()
+        return JsonResponse({"success": True, "message": "Grupo eliminado por no tener participantes"})
+
+    # Si era admin, transferir al participante con más antigüedad (menor id de unión)
+    if es_admin:
+        # El participante que lleva más tiempo es el que tiene el menor ID de usuario
+        # entre los restantes (se unieron antes)
+        nuevo_admin = chat.participantes.order_by("id").first()
+        if nuevo_admin:
+            chat.admin_grupo = nuevo_admin
+            chat.save(update_fields=["admin_grupo"])
+
+    return JsonResponse({
+        "success": True,
+        "message": "Saliste del grupo",
+        "nuevo_admin": chat.admin_grupo.nombre if es_admin and chat.admin_grupo else None
+    })
+
+
+@require_POST
+def eliminar_grupo(request, chat_id):
+    usuario_actual = obtener_usuario_actual(request)
+    if not usuario_actual:
+        return JsonResponse({"error": "Usuario no identificado"}, status=403)
+
+    try:
+        chat = Chat.objects.get(id=chat_id, participantes=usuario_actual)
+    except Chat.DoesNotExist:
+        return JsonResponse({"error": "Grupo no encontrado"}, status=404)
+
+    if not chat.is_group:
+        return JsonResponse({"error": "No es un grupo"}, status=400)
+
+    if chat.admin_grupo != usuario_actual:
+        return JsonResponse({"error": "Solo el admin puede eliminar el grupo"}, status=403)
+
+    chat.delete()
+    return JsonResponse({"success": True, "message": "Grupo eliminado"})
+
+@require_POST
+def agregar_participantes(request, chat_id):
+    usuario_actual = obtener_usuario_actual(request)
+    if not usuario_actual:
+        return JsonResponse({"error": "Usuario no identificado"}, status=403)
+
+    try:
+        chat = Chat.objects.get(id=chat_id, participantes=usuario_actual)
+    except Chat.DoesNotExist:
+        return JsonResponse({"error": "Grupo no encontrado"}, status=404)
+
+    if not chat.is_group:
+        return JsonResponse({"error": "No es un grupo"}, status=400)
+
+    if chat.admin_grupo != usuario_actual:
+        return JsonResponse({"error": "Solo el admin puede agregar participantes"}, status=403)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON inválido"}, status=400)
+
+    ids = data.get("participante_ids", [])
+    if not ids:
+        return JsonResponse({"error": "No se especificaron participantes"}, status=400)
+
+    # Solo amigos del admin que no están ya en el grupo
+    try:
+        amigos = Amistad.obtener_amigos(usuario_actual)
+        amigos_ids = [a.id for a in amigos]
+        ya_en_grupo = list(chat.participantes.values_list("id", flat=True))
+
+        ids_validos = list(set(ids) & set(amigos_ids))
+        if not ids_validos:
+            return JsonResponse({"error": "Ningún usuario seleccionado es tu amigo"}, status=400)
+
+        usuarios_a_agregar = Usuario.objects.filter(
+            id__in=ids_validos
+        ).exclude(id__in=ya_en_grupo)
+
+        agregados = []
+        for u in usuarios_a_agregar:
+            chat.participantes.add(u)
+            agregados.append({"id": u.id, "nombre": u.nombre})
+
+        return JsonResponse({
+            "success": True,
+            "agregados": agregados,
+            "message": f"{len(agregados)} participante(s) agregado(s)"
+        })
+    except Exception as e:
+        logger.error(f"Error en agregar_participantes: {e}", exc_info=True)
+        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)

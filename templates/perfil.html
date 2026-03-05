@@ -1,48 +1,746 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - InfoSena</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-.media-grid-1 { display: grid; grid-template-columns: 1fr; gap: 2px; max-height: 600px; border-radius: 12px; overflow: hidden; background: #000; }
-.media-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; max-height: 500px; border-radius: 12px; overflow: hidden; background: #000; }
-.media-grid-3 { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; max-height: 500px; border-radius: 12px; overflow: hidden; background: #000; }
-.media-grid-3 .media-item:first-child { grid-row: 1 / 3; }
-.media-grid-4 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; max-height: 500px; border-radius: 12px; overflow: hidden; background: #000; }
-.media-grid-5plus { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; max-height: 500px; border-radius: 12px; overflow: hidden; background: #000; }
-.media-grid-5plus .media-item:nth-child(1) { grid-column: 1 / 3; grid-row: 1 / 3; }
-.media-grid-5plus .media-item:nth-child(2) { grid-column: 3 / 5; grid-row: 1 / 2; }
-.media-item { position: relative; overflow: hidden; background: #000; cursor: pointer; width: 100%; height: 100%; }
-.media-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-.media-item:hover img { transform: scale(1.05); }
-.media-item.video-item { position: relative; }
-.media-item video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.video-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: background 0.3s ease; }
-.video-play-overlay:hover { background: rgba(0,0,0,0.5); }
-.video-play-overlay svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); transition: transform 0.3s ease; }
-.video-play-overlay:hover svg { transform: scale(1.1); }
-.media-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: bold; cursor: pointer; transition: background 0.3s ease; z-index: 10; }
-.media-overlay:hover { background: rgba(0,0,0,0.85); }
-.modal-media { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-.modal-media.hidden { display: none; }
-.modal-media img, .modal-media video { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-.modal-close-btn { position: absolute; top: 1rem; right: 1rem; width: 3.5rem; height: 3.5rem; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 10000; }
-.modal-close-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
-.modal-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; backdrop-filter: blur(10px); }
-.modal-nav-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
-.modal-nav-btn.prev { left: 1rem; }
-.modal-nav-btn.next { right: 1rem; }
-.modal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.modal-counter { position: absolute; top: 1rem; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; backdrop-filter: blur(10px); }
-@media (max-width: 768px) {
-    .media-grid-1, .media-grid-2, .media-grid-3, .media-grid-4, .media-grid-5plus { max-height: 400px; }
-    .media-overlay { font-size: 2rem; }
-}
+        :root {
+            --verde: #0d7a2f;
+            --verde-claro: #1db954;
+            --verde-dark: #0a5e24;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+        }
+
+        /* SCROLLBAR */
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* ============================================ */
+        /* HEADER                                      */
+        /* ============================================ */
+        .header {
+            background: linear-gradient(135deg, #0d3604 0%, #1a6b0a 55%, #2b9e15 100%);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-monogram {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Sora', sans-serif;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -1px;
+            border: 1.5px solid rgba(255,255,255,0.25);
+        }
+
+        .logo-text {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span { color: #7efa8a; }
+
+        /* Search bar */
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .header-search input {
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 999px;
+            padding: 0.5rem 1rem 0.5rem 2.75rem;
+            color: white;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-search input::placeholder { color: rgba(255,255,255,0.65); }
+
+        .header-search input:focus {
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.5);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+
+        .search-icon-abs {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            pointer-events: none;
+        }
+
+        .clear-btn-abs {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Search panel dropdown */
+        .search-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+            z-index: 200;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.06);
+            animation: fadeInDown 0.2s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-panel-header {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .search-panel-header h3 { font-size: 0.8rem; font-weight: 700; color: #374151; margin: 0; }
+        .search-panel-header button { font-size: 0.78rem; color: #16a34a; font-weight: 600; background: none; border: none; cursor: pointer; }
+
+        /* Nav icon buttons */
+        .nav-icon-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255,255,255,0.22);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+
+        .nav-icon-btn:active { transform: scale(0.95); }
+
+        /* Badge notificaciones */
+        .notif-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 2px solid #0d3604;
+            animation: pulseBadge 2s infinite;
+        }
+
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50%       { transform: scale(1.2); }
+        }
+
+        /* Avatar button */
+        .avatar-btn-header {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2.5px solid rgba(255,255,255,0.6);
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+        }
+
+        .avatar-btn-header:hover {
+            border-color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+        }
+
+        .avatar-btn-header img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Dropdown */
+        .hdr-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+            opacity: 0;
+            transform: translateY(-8px) scale(0.97);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(0,0,0,0.06);
+            overflow: hidden;
+            z-index: 200;
+        }
+
+        .hdr-dropdown.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .hdr-dropdown-header {
+            background: linear-gradient(135deg, #0d3604, #2b9e15);
+            padding: 1rem 1.25rem;
+        }
+
+        .hdr-dropdown-header h4 {
+            font-family: 'Sora', sans-serif;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .hdr-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.1rem;
+            color: #374151;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .hdr-dropdown-item:hover { background: #f0fdf4; color: #16a34a; }
+        .hdr-dropdown-item.danger:hover { background: #fef2f2; color: #dc2626; }
+
+        .hdr-dropdown-item .d-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .hdr-dropdown-divider { height: 1px; background: #f3f4f6; margin: 0.2rem 0; }
+        .nav-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.2); margin: 0 0.25rem; }
+
+        /* ============================================ */
+        /* MOBILE BOTTOM NAV                           */
+        /* ============================================ */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            z-index: 100;
+            padding: 0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+
+        .mobile-bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .mob-nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.3rem 0.5rem;
+            border-radius: 12px;
+            transition: all 0.2s;
+            position: relative;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .mob-nav-btn.active { color: #16a34a; }
+
+        .mob-nav-icon {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .mob-nav-btn.active .mob-nav-icon { background: #f0fdf4; }
+
+        /* ============================================ */
+        /* PERFIL - BANNER Y ESTRUCTURA                */
+        /* ============================================ */
+        .profile-banner {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-banner-gradient {
+            position: absolute;
+            inset: 0;
+        }
+
+        .profile-banner-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.08;
+            background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px),
+                              radial-gradient(circle at 80% 20%, white 1px, transparent 1px),
+                              radial-gradient(circle at 50% 80%, white 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Stats chips */
+        .stat-chip {
+            background: #f0fdf4;
+            border: 1.5px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 0.65rem 1.1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-chip:hover {
+            background: #dcfce7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22,163,74,0.15);
+        }
+
+        .stat-chip .stat-num {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #15803d;
+            line-height: 1;
+        }
+
+        .stat-chip .stat-label {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Info rows */
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            transition: all 0.15s;
+        }
+
+        .info-row:hover { background: #f9fafb; }
+
+        .info-row .info-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-row .info-label {
+            font-size: 0.72rem;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-row .info-value {
+            font-size: 0.9rem;
+            color: #111827;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        /* Botones de acción */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.25rem;
+            border-radius: 14px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-btn-primary {
+            background: #16a34a;
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+        }
+
+        .action-btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .action-btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-blue {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .action-btn-blue:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+        }
+
+        /* Role badge */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        /* Publicaciones */
+        .publicacion-card {
+            transition: box-shadow 0.2s ease;
+        }
+
+        .publicacion-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        /* ============================================ */
+        /* MEDIA GRIDS                                 */
+        /* ============================================ */
+        .media-grid-1 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            max-height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .media-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            max-height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .media-grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            max-height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .media-grid-3 .media-item:first-child { grid-row: 1 / 3; }
+
+        .media-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            max-height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .media-grid-5plus {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2px;
+            max-height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .media-grid-5plus .media-item:nth-child(1) { grid-column: 1 / 3; grid-row: 1 / 3; }
+        .media-grid-5plus .media-item:nth-child(2) { grid-column: 3 / 5; grid-row: 1 / 2; }
+
+        .media-item {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .media-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .media-item:hover img { transform: scale(1.05); }
+        .media-item.video-item { position: relative; }
+
+        .media-item video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        .video-play-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .video-play-overlay:hover { background: rgba(0,0,0,0.5); }
+        .video-play-overlay svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); transition: transform 0.3s ease; }
+        .video-play-overlay:hover svg { transform: scale(1.1); }
+
+        .media-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        .media-overlay:hover { background: rgba(0,0,0,0.85); }
+
+        /* Modales */
+        .modal-media {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-media.hidden { display: none; }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+
+        .modal-close-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+
+        .modal-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-nav-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
+        .modal-nav-btn.prev { left: 1rem; }
+        .modal-nav-btn.next { right: 1rem; }
+        .modal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .modal-counter {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateX(400px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slide-in { animation: slide-in 0.3s ease-out; }
+
+        @media (max-width: 768px) {
+            .media-grid-1, .media-grid-2, .media-grid-3,
+            .media-grid-4, .media-grid-5plus { max-height: 400px; }
+            .media-overlay { font-size: 2rem; }
+            .mobile-bottom-nav { display: block; }
+            body { padding-bottom: 70px; }
+            .profile-banner { height: 140px; }
+        }
+
+        @media (max-width: 900px) {
+            .header-search { max-width: 200px; }
+        }
     </style>
 </head>
-<body class="bg-gray-200">
+
+<body>
 
     {% if messages %}
     <div class="messages-container fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-11/12 md:w-1/3">
@@ -58,183 +756,638 @@
     </div>
     {% endif %}
 
-    <!-- HEADER -->
-    <header class="hero bg-gradient-to-r from-[#0d3604] to-[#2b9e15] shadow-lg sticky top-0 z-50">
-        <nav class="container mx-auto px-2 py-2 relative">
-            <div class="flex justify-between items-center">
-                <div class="flex flex-row-reverse items-center">
-                    {% load static %}
-                    <img src="{% static 'img/logo2.png' %}" width="200px" />
-                </div>
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="{% url 'sesion:home' %}" class="block cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" class="w-10 h-10 hover:scale-110 transition-transform duration-200">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 3l9 6.75V21H3V9.75z" />
-                        </svg>
-                    </a>
+    <!-- ========================= -->
+    <!--         HEADER            -->
+    <!-- ========================= -->
+    <header class="header">
+        <div class="header-inner">
 
-                    <!-- Notificaciones -->
-                    <div class="relative">
-                        <button id="btnNotificaciones" class="relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5" class="w-12 h-12">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a2 2 0 002-2H10a2 2 0 002 2zm6-6V11a6 6 0 10-12 0v5l-1.5 2.5h15L18 16z" />
-                            </svg>
-                            <span id="notificationBadge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</span>
-                        </button>
-                        <div id="menuNotificaciones" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl z-50 overflow-hidden">
-                            <div class="w-6 h-6 bg-white rotate-45 absolute -top-3 right-6"></div>
-                            <div class="bg-gradient-to-r from-green-600 to-green-500 p-4">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-lg font-bold text-white">Notificaciones</h3>
-                                    <button onclick="marcarTodasLeidasHeader()" class="text-white text-xs hover:text-green-100 transition">✓ Marcar todas</button>
-                                </div>
-                            </div>
-                            <div class="max-h-96 overflow-y-auto bg-gray-50" id="listaNotificaciones">
-                                <div class="flex flex-col items-center justify-center py-12">
-                                    <div class="text-4xl mb-2">🔔</div>
-                                    <p class="text-gray-400 text-sm">Cargando notificaciones...</p>
-                                </div>
-                            </div>
-                            <div class="bg-white border-t border-gray-200 p-3">
-                                <a href="{% url 'notificaciones:lista' %}" class="block text-center text-sm text-green-600 font-semibold hover:text-green-800 transition">Ver todas las notificaciones →</a>
-                            </div>
-                        </div>
+            <!-- LOGO -->
+            <a href="{% url 'sesion:home' %}" class="logo-area">
+                <div class="logo-monogram">iS</div>
+                <span class="logo-text">Info<span>Sena</span></span>
+            </a>
+
+            <!-- BÚSQUEDA DESKTOP -->
+            <div class="header-search hidden md:block">
+                <svg class="search-icon-abs" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar personas..." autocomplete="off"/>
+                <button id="clearSearchBtn" class="clear-btn-abs hidden">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.3 5.71a1 1 0 0 0-1.42 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.42L13.41 12l4.89-4.88a1 1 0 0 0 0-1.41z"/>
+                    </svg>
+                </button>
+
+                <div id="searchPanel" class="search-panel hidden">
+                    <div class="search-panel-header">
+                        <h3 id="panelTitle">Búsquedas recientes</h3>
+                        <button id="clearHistoryBtn">Limpiar todo</button>
                     </div>
-
-                    <!-- Perfil -->
-                    <div class="relative">
-                        <button id="btnPerfil" class="flex items-center justify-center">
-                            {% if usuario.foto %}
-                            <img src="{{ usuario.foto.url }}" alt="{{ usuario.nombre }}" class="w-10 h-10 rounded-full object-cover border-2 border-white">
-                            {% else %}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" class="w-10 h-10">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a5 5 0 100-10 5 5 0 000 10zm7 8c0-4-3-7-7-7s-7 3-7 7" />
-                            </svg>
-                            {% endif %}
-                        </button>
-                        <div id="menuPerfil" class="hidden absolute right-0 mt-3 w-64 bg-gray-200 rounded-xl shadow-xl p-4 z-50">
-                            <div class="w-6 h-6 bg-gray-200 rotate-45 absolute -top-3 right-6"></div>
-                            <a href="{% url 'perfil:perfiles' %}" class="block bg-green-600 text-white text-center py-3 rounded-lg hover:bg-green-700 transition mb-3">👤 Ver Perfil</a>
-                            {% if es_admin %}
-                            <a href="{% url 'registro:panel_aprobacion' %}" class="block bg-yellow-500 text-white text-center py-3 rounded-lg hover:bg-yellow-600 transition mb-3 font-semibold shadow-md">⚙️ Panel de Aprobación</a>
-                            {% endif %}
-                            <div class="my-3 border-t border-gray-400"></div>
-                            <a href="{% url 'sesion:login' %}" class="block bg-gray-400 text-white text-center py-3 rounded-lg hover:bg-gray-500 transition">🚪 Cerrar Sesión</a>
-                        </div>
+                    <div id="searchLoading" class="hidden p-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-600"></div>
+                        <p class="text-gray-500 mt-2 text-sm">Buscando...</p>
+                    </div>
+                    <div id="searchResults" class="max-h-80 overflow-y-auto scrollbar-thin"></div>
+                    <div id="noResults" class="hidden p-8 text-center">
+                        <div class="text-5xl mb-3">🔍</div>
+                        <p class="text-gray-600 font-semibold">No se encontraron resultados</p>
+                        <p class="text-gray-400 text-sm mt-1">Intenta con otro nombre o documento</p>
+                    </div>
+                    <div id="emptyHistory" class="hidden p-8 text-center">
+                        <div class="text-5xl mb-3">🕐</div>
+                        <p class="text-gray-600 font-semibold">Sin búsquedas recientes</p>
+                        <p class="text-gray-400 text-sm mt-1">Tus búsquedas aparecerán aquí</p>
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
 
-    <!-- CONTENIDO DEL PERFIL -->
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-3xl shadow-lg overflow-hidden max-w-4xl mx-auto">
-            <div class="h-48 bg-gradient-to-r from-[#0d3604] to-[#2b9e15]"></div>
-            <div class="px-8 pb-8">
-                <!-- Foto de perfil -->
-                <div class="relative -mt-20 mb-4">
-                    {% if usuario.foto %}
-                        <img src="{{ usuario.foto.url }}" alt="Foto de {{ usuario.nombre }}" class="w-40 h-40 rounded-full border-8 border-white shadow-lg object-cover">
-                    {% else %}
-                        <div class="w-40 h-40 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full border-8 border-white shadow-lg flex items-center justify-center text-6xl">
-                            {% if tipo_perfil == 'instructor' %}👨‍🏫{% elif tipo_perfil == 'bienestar' %}🏥{% elif tipo_perfil == 'aprendiz' %}🎓{% endif %}
+            <!-- ICONOS DESKTOP -->
+            <div class="hidden md:flex items-center gap-1">
+
+                <div style="position:relative">
+                    <a href="{% url 'sesion:home' %}" class="nav-icon-btn">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 3l9 6.75V21H3V9.75z"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div style="position:relative">
+                    <a href="{% url 'chat:lista_chats' %}" class="nav-icon-btn">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6A8.38 8.38 0 0111.5 3h1a8.5 8.5 0 018.5 8.5z"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div style="position:relative">
+                    <a href="{% url 'sesion:amigos' %}" class="nav-icon-btn">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="7" cy="7" r="4"/>
+                            <path d="M1 21v-2a6 6 0 016-6h0a6 6 0 016 6v2"/>
+                            <circle cx="17" cy="9" r="3.5"/>
+                            <path d="M14 21v-2a4 4 0 014-4h0a4 4 0 014 4v2"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Notificaciones -->
+                <div style="position:relative">
+                    <button id="btnNotificaciones" class="nav-icon-btn">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a2 2 0 002-2H10a2 2 0 002 2zm6-6V11a6 6 0 10-12 0v5l-1.5 2.5h15L18 16z"/>
+                        </svg>
+                        <span id="notificationBadge" class="notif-badge hidden">0</span>
+                    </button>
+
+                    <div id="menuNotificaciones" class="hdr-dropdown" style="width:320px; right:0">
+                        <div class="hdr-dropdown-header" style="display:flex;justify-content:space-between;align-items:center">
+                            <h4>🔔 Notificaciones</h4>
+                            <button onclick="marcarTodasLeidasHeader()" style="color:white;font-size:0.75rem;font-weight:600;background:none;border:none;cursor:pointer;opacity:0.85">
+                                ✓ Marcar todas
+                            </button>
                         </div>
-                    {% endif %}
-                    <div class="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg">
-                        <span class="text-2xl">{% if tipo_perfil == 'instructor' %}👨‍🏫{% elif tipo_perfil == 'bienestar' %}🏥{% elif tipo_perfil == 'aprendiz' %}🎓{% endif %}</span>
+                        <div class="max-h-96 overflow-y-auto bg-gray-50" id="listaNotificaciones">
+                            <div class="flex flex-col items-center justify-center py-12">
+                                <div class="text-4xl mb-2">🔔</div>
+                                <p class="text-gray-400 text-sm">Cargando notificaciones...</p>
+                            </div>
+                        </div>
+                        <div class="bg-white border-t border-gray-200 p-3">
+                            <a href="{% url 'notificaciones:lista' %}" class="block text-center text-sm text-green-600 font-semibold hover:text-green-800 transition">
+                                Ver todas las notificaciones →
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Datos -->
-                <div class="space-y-4">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-800">{{ usuario.nombre }}</h1>
-                        <p class="text-gray-600 text-lg">
-                            {% if tipo_perfil == 'instructor' %}Instructor{% elif tipo_perfil == 'bienestar' %}Bienestar al Aprendiz{% elif tipo_perfil == 'aprendiz' %}Aprendiz{% endif %}
-                        </p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-gray-200">
-                        <div><p class="text-gray-500 text-sm">Número de documento</p><p class="text-gray-800 font-semibold">{{ usuario.numero_documento }}</p></div>
-                        <div><p class="text-gray-500 text-sm">Tipo de documento</p><p class="text-gray-800 font-semibold">{{ usuario.tipo_documento }}</p></div>
-                        <div><p class="text-gray-500 text-sm">Correo electrónico</p><p class="text-gray-800 font-semibold">{{ usuario.email }}</p></div>
-                        <div><p class="text-gray-500 text-sm">Centro formativo</p><p class="text-gray-800 font-semibold">{{ usuario.centro_formativo }}</p></div>
-                        <div><p class="text-gray-500 text-sm">Región</p><p class="text-gray-800 font-semibold">{{ usuario.region }}</p></div>
-                        {% if tipo_perfil == 'aprendiz' %}
-                        <div><p class="text-gray-500 text-sm">Ficha</p><p class="text-gray-800 font-semibold">{{ usuario.ficha }}</p></div>
-                        <div><p class="text-gray-500 text-sm">Jornada</p><p class="text-gray-800 font-semibold">{{ usuario.jornada }}</p></div>
+                <div class="nav-divider"></div>
+
+                <!-- Perfil (activo) -->
+                <div style="position:relative">
+                    <button id="btnPerfil" class="avatar-btn-header">
+                        {% if usuario.foto %}
+                        <img src="{{ usuario.foto.url }}" alt="{{ usuario.nombre }}">
+                        {% else %}
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a5 5 0 100-10 5 5 0 000 10zm7 8c0-4-3-7-7-7s-7 3-7 7"/>
+                        </svg>
                         {% endif %}
-                        <div><p class="text-gray-500 text-sm">Tipo de usuario</p><p class="text-gray-800 font-semibold capitalize">{{ tipo_perfil }}</p></div>
-                    </div>
-                    <div class="flex justify-between items-center pt-6">
-                        <div class="flex gap-4">
-                            <a href="{% url 'perfil:editar_perfil' %}" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-md">✏️ Editar perfil</a>
-                            <a href="{% url 'perfil:home' %}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition shadow-md">🏠 Volver al inicio</a>
+                    </button>
+
+                    <div id="menuPerfil" class="hdr-dropdown" style="width:230px; right:0">
+                        <div class="hdr-dropdown-header">
+                            <div style="display:flex;align-items:center;gap:0.65rem">
+                                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                                    {% if usuario.foto %}
+                                    <img src="{{ usuario.foto.url }}" style="width:100%;height:100%;object-fit:cover">
+                                    {% else %}
+                                    <span style="font-size:1.3rem">
+                                        {% if tipo_perfil == 'instructor' %}👨‍🏫
+                                        {% elif tipo_perfil == 'bienestar' %}🏥
+                                        {% else %}🎓{% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div style="font-family:'Sora',sans-serif;color:white;font-weight:700;font-size:0.85rem">{{ usuario.nombre }}</div>
+                                    <div style="color:rgba(255,255,255,0.75);font-size:0.72rem">
+                                        {% if tipo_perfil == 'instructor' %}Instructor
+                                        {% elif tipo_perfil == 'bienestar' %}Bienestar
+                                        {% else %}Aprendiz{% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        {% if tipo_perfil == 'bienestar' %}
-                        <a href="{% url 'publicaciones:crear_publicacion' %}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">➕ Crear publicación</a>
+
+                        <a href="{% url 'perfil:perfiles' %}" class="hdr-dropdown-item">
+                            <div class="d-icon" style="background:#f0fdf4;color:#16a34a">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm7 8c0-4-3-7-7-7s-7 3-7 7"/>
+                                </svg>
+                            </div>
+                            Ver Perfil
+                        </a>
+
+                        <a href="{% url 'perfil:editar_perfil' %}" class="hdr-dropdown-item">
+                            <div class="d-icon" style="background:#eff6ff;color:#3b82f6">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </div>
+                            Editar Perfil
+                        </a>
+
+                        {% if es_admin %}
+                        <a href="{% url 'registro:panel_aprobacion' %}" class="hdr-dropdown-item">
+                            <div class="d-icon" style="background:#fef3c7;color:#d97706">⚙️</div>
+                            Panel de Aprobación
+                        </a>
                         {% endif %}
+
+                        <div class="hdr-dropdown-divider"></div>
+
+                        <a href="{% url 'sesion:login' %}" class="hdr-dropdown-item danger">
+                            <div class="d-icon" style="background:#fef2f2;color:#dc2626">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                                    <polyline points="16,17 21,12 16,7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                            </div>
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES MOBILE -->
+            <div class="flex md:hidden items-center gap-2">
+                <button id="btnSearch" class="nav-icon-btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- BÚSQUEDA MOBILE EXPANDIBLE -->
+        <div id="mobileSearchBox" class="hidden px-4 pb-3 md:hidden">
+            <div class="bg-white/15 border border-white/25 rounded-2xl px-4 py-2 flex items-center gap-3 relative">
+                <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" viewBox="0 0 24 24" class="flex-shrink-0">
+                    <circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/>
+                </svg>
+                <input type="text" id="mobileSearchInput" placeholder="Buscar personas..."
+                       class="flex-1 outline-none bg-transparent text-white placeholder-white/60 text-sm" autocomplete="off"/>
+                <button id="clearMobileSearchBtn" class="hidden text-white/70">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.3 5.71a1 1 0 0 0-1.42 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.42L13.41 12l4.89-4.88a1 1 0 0 0 0-1.41z"/>
+                    </svg>
+                </button>
+
+                <div id="mobileSearchPanel" class="search-panel hidden" style="top:calc(100% + 8px)">
+                    <div class="search-panel-header">
+                        <h3 id="mobilePanelTitle">Búsquedas recientes</h3>
+                        <button id="clearMobileHistoryBtn">Limpiar todo</button>
+                    </div>
+                    <div id="mobileSearchLoading" class="hidden p-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-600"></div>
+                        <p class="text-gray-500 mt-2 text-sm">Buscando...</p>
+                    </div>
+                    <div id="mobileSearchResults" class="max-h-80 overflow-y-auto"></div>
+                    <div id="mobileNoResults" class="hidden p-8 text-center">
+                        <div class="text-5xl mb-3">🔍</div>
+                        <p class="text-gray-600 font-semibold">No se encontraron resultados</p>
+                    </div>
+                    <div id="mobileEmptyHistory" class="hidden p-8 text-center">
+                        <div class="text-5xl mb-3">🕐</div>
+                        <p class="text-gray-600 font-semibold">Sin búsquedas recientes</p>
                     </div>
                 </div>
             </div>
         </div>
+    </header>
 
-        {% if tipo_perfil == 'bienestar' %}
-        <div class="max-w-4xl mx-auto mt-8 space-y-6">
-            {% if publicaciones %}
-                {% for publicacion in publicaciones %}
-                <!-- ===== PUBLICACIÓN ===== -->
-                <div class="bg-white rounded-3xl shadow p-4">
+    <!-- ========================= -->
+    <!--    CONTENIDO DEL PERFIL   -->
+    <!-- ========================= -->
+    <div class="min-h-screen py-6 px-4">
+        <div class="max-w-5xl mx-auto">
 
-                    <!-- Header -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            {% if publicacion.autor.foto %}
-                                <img src="{{ publicacion.autor.foto.url }}" alt="{{ publicacion.autor.nombre }}" class="w-10 h-10 rounded-full object-cover">
+            <!-- ============================================ -->
+            <!-- TARJETA PRINCIPAL DE PERFIL                 -->
+            <!-- ============================================ -->
+            <div class="bg-white rounded-2xl shadow-lg mb-6" style="position:relative;">
+
+                <!-- Banner con patrón (overflow-hidden solo aquí, NO en la tarjeta padre) -->
+                <div class="profile-banner rounded-t-2xl overflow-hidden">
+                    <div class="profile-banner-gradient bg-gradient-to-r
+                        {% if tipo_perfil == 'aprendiz' %} from-blue-600 via-blue-500 to-cyan-500
+                        {% elif tipo_perfil == 'instructor' %} from-purple-600 via-purple-500 to-indigo-500
+                        {% elif tipo_perfil == 'bienestar' %} from-green-700 via-green-500 to-emerald-400
+                        {% endif %}">
+                    </div>
+                    <div class="profile-banner-pattern"></div>
+
+                    <!-- Botón editar en el banner -->
+                    <div class="absolute top-4 right-4">
+                        <a href="{% url 'perfil:editar_perfil' %}"
+                           class="flex items-center gap-2 bg-white/20 hover:bg-white/35 backdrop-blur-sm border border-white/30 text-white px-4 py-2 rounded-xl text-sm font-600 transition">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Editar perfil
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Cuerpo del perfil -->
+                <div class="px-6 pb-6 md:px-8 md:pb-8" style="position:relative;">
+                    <div class="flex flex-col md:flex-row md:items-end gap-5" style="margin-top:-4rem;">
+
+                        <!-- Foto de perfil: z-index para que sobresalga sobre el banner -->
+                        <div class="flex-shrink-0" style="position:relative; z-index:10;">
+                            {% if usuario.foto %}
+                            <img src="{{ usuario.foto.url }}"
+                                 alt="{{ usuario.nombre }}"
+                                 class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-8 border-white shadow-xl">
                             {% else %}
-                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white text-xl">🏥</div>
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-8 border-white shadow-xl flex items-center justify-center text-5xl md:text-6xl bg-gradient-to-br
+                                {% if tipo_perfil == 'aprendiz' %} from-blue-400 to-blue-600
+                                {% elif tipo_perfil == 'instructor' %} from-purple-400 to-purple-600
+                                {% elif tipo_perfil == 'bienestar' %} from-green-400 to-green-600
+                                {% endif %}">
+                                {% if tipo_perfil == 'instructor' %}👨‍🏫
+                                {% elif tipo_perfil == 'bienestar' %}🏥
+                                {% elif tipo_perfil == 'aprendiz' %}🎓
+                                {% endif %}
+                            </div>
                             {% endif %}
+                        </div>
+
+                        <!-- Info + acciones -->
+                        <div class="flex-1 flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-1">
                             <div>
-                                <p class="font-bold">{{ publicacion.autor.nombre }}</p>
-                                <p class="text-sm text-gray-500">Bienestar al Aprendiz • {{ publicacion.fecha_creacion|timesince }} atrás</p>
+                                <h1 style="font-family:'Sora',sans-serif" class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                                    {{ usuario.nombre }}
+                                </h1>
+
+                                <!-- Role badge -->
+                                <div class="flex flex-wrap items-center gap-2 mt-2">
+                                    <span class="role-badge
+                                        {% if tipo_perfil == 'aprendiz' %} bg-blue-100 text-blue-700
+                                        {% elif tipo_perfil == 'instructor' %} bg-purple-100 text-purple-700
+                                        {% elif tipo_perfil == 'bienestar' %} bg-green-100 text-green-700
+                                        {% endif %}">
+                                        {% if tipo_perfil == 'instructor' %}👨‍🏫 Instructor
+                                        {% elif tipo_perfil == 'bienestar' %}🏥 Bienestar al Aprendiz
+                                        {% elif tipo_perfil == 'aprendiz' %}🎓 Aprendiz
+                                        {% endif %}
+                                    </span>
+                                    {% if tipo_perfil == 'aprendiz' %}
+                                    <span class="bg-gray-100 text-gray-600 text-xs font-600 px-3 py-1 rounded-full">
+                                        📚 Ficha {{ usuario.ficha }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Stats chips -->
+                                <div class="flex gap-3 mt-4">
+                                    {% if publicaciones %}
+                                    <div class="stat-chip">
+                                        <div class="stat-num">{{ publicaciones.count }}</div>
+                                        <div class="stat-label">Posts</div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="stat-chip">
+                                        <div class="stat-num">{{ usuario.email|truncatechars:1 }}</div>
+                                        <div class="stat-label">Cuenta</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="flex flex-wrap gap-2">
+                               
+                                <a href="{% url 'sesion:home' %}" class="action-btn action-btn-secondary">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M3 9.75L12 3l9 6.75V21H3V9.75z" stroke-linejoin="round"/>
+                                    </svg>
+                                    Inicio
+                                </a>
+                                {% if tipo_perfil == 'bienestar' %}
+                                <a href="{% url 'publicaciones:crear_publicacion' %}" class="action-btn action-btn-blue">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Nueva publicación
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- GRID: INFORMACIÓN + DATOS ADICIONALES       -->
+            <!-- ============================================ -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+                <!-- INFORMACIÓN PERSONAL -->
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                        <div style="width:30px;height:30px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center">
+                            <svg width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm7 8c0-4-3-7-7-7s-7 3-7 7"/>
+                            </svg>
+                        </div>
+                        <h2 style="font-family:'Sora',sans-serif" class="font-700 text-gray-800 text-base">Información personal</h2>
+                    </div>
+
+                    <div class="p-4 space-y-1">
+                        <!-- Email -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#eff6ff">
+                                <svg width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Correo electrónico</div>
+                                <div class="info-value">{{ usuario.email }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Documento -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#fef3c7">
+                                <svg width="18" height="18" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">{{ usuario.tipo_documento }}</div>
+                                <div class="info-value">{{ usuario.numero_documento }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Centro -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#f0fdf4">
+                                <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Centro formativo</div>
+                                <div class="info-value">{{ usuario.centro_formativo }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Región -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#fdf4ff">
+                                <svg width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Región</div>
+                                <div class="info-value">{{ usuario.region }}</div>
+                            </div>
+                        </div>
+
+                        {% if tipo_perfil == 'aprendiz' %}
+                        <!-- Ficha -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#fff7ed">
+                                <svg width="18" height="18" fill="none" stroke="#ea580c" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Ficha de formación</div>
+                                <div class="info-value">{{ usuario.ficha }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Jornada -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#f0fdf4">
+                                <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Jornada</div>
+                                <div class="info-value">{{ usuario.jornada }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Tipo de usuario -->
+                        <div class="info-row">
+                            <div class="info-icon" style="background:#f0fdf4">
+                                <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="info-label">Tipo de usuario</div>
+                                <div class="info-value capitalize">{{ tipo_perfil }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL LATERAL: Accesos rápidos -->
+                <div class="space-y-4">
+
+                    <!-- Accesos rápidos -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                            <div style="width:30px;height:30px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center">
+                                <svg width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <h2 style="font-family:'Sora',sans-serif" class="font-700 text-gray-800 text-base">Accesos rápidos</h2>
+                        </div>
+                        <div class="p-3 space-y-1">
+                            <a href="{% url 'sesion:home' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition text-gray-700 font-500 text-sm">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center">
+                                    <svg width="16" height="16" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M3 9.75L12 3l9 6.75V21H3V9.75z" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                Inicio / Feed
+                            </a>
+                            <a href="{% url 'sesion:amigos' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition text-gray-700 font-500 text-sm">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#fdf4ff;display:flex;align-items:center;justify-content:center">
+                                    <svg width="16" height="16" fill="none" stroke="#a855f7" stroke-width="2" viewBox="0 0 24 24">
+                                        <circle cx="7" cy="7" r="4"/><path d="M1 21v-2a6 6 0 016-6h0a6 6 0 016 6v2"/>
+                                        <circle cx="17" cy="9" r="3.5"/><path d="M14 21v-2a4 4 0 014-4h0a4 4 0 014 4v2"/>
+                                    </svg>
+                                </div>
+                                Amigos
+                            </a>
+                            <a href="{% url 'chat:lista_chats' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition text-gray-700 font-500 text-sm">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center">
+                                    <svg width="16" height="16" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6A8.38 8.38 0 0111.5 3h1a8.5 8.5 0 018.5 8.5z"/>
+                                    </svg>
+                                </div>
+                                Mensajes
+                            </a>
+                            <a href="{% url 'notificaciones:lista' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition text-gray-700 font-500 text-sm">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center">
+                                    <svg width="16" height="16" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+                                    </svg>
+                                </div>
+                                Notificaciones
+                            </a>
+                            {% if es_admin %}
+                            <a href="{% url 'registro:panel_aprobacion' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 transition text-gray-700 font-500 text-sm">
+                                <div style="width:34px;height:34px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:1rem">⚙️</div>
+                                Panel Admin
+                            </a>
+                            {% endif %}
+                            <div class="pt-1 border-t border-gray-100 mt-1">
+                                <a href="{% url 'sesion:login' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition text-red-600 font-500 text-sm">
+                                    <div style="width:34px;height:34px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center">
+                                        <svg width="16" height="16" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                                            <polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                                        </svg>
+                                    </div>
+                                    Cerrar Sesión
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- PUBLICACIONES (SOLO BIENESTAR)              -->
+            <!-- ============================================ -->
+            {% if tipo_perfil == 'bienestar' %}
+            <div class="space-y-5">
+
+                <!-- Header sección publicaciones -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div style="width:38px;height:38px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center">
+                            <svg width="20" height="20" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 style="font-family:'Sora',sans-serif" class="text-lg font-700 text-gray-900">Mis publicaciones</h2>
+                            <p class="text-xs text-gray-500">Contenido que has publicado</p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if publicaciones %}
+                {% for publicacion in publicaciones %}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden publicacion-card">
+
+                    <!-- Header publicación -->
+                    <div class="p-4 flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            {% if publicacion.autor.foto %}
+                            <img src="{{ publicacion.autor.foto.url }}" alt="{{ publicacion.autor.nombre }}"
+                                 class="w-11 h-11 rounded-full object-cover">
+                            {% else %}
+                            <div class="w-11 h-11 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white text-xl">🏥</div>
+                            {% endif %}
+                            <div>
+                                <p class="font-700 text-gray-900 text-sm">{{ publicacion.autor.nombre }}</p>
+                                <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                                    <span>{{ publicacion.fecha_creacion|timesince }} atrás</span>
+                                    <span>•</span>
+                                    <span class="px-2 py-0.5 rounded-full font-600
+                                        {% if publicacion.categoria == 'salud' %} bg-red-100 text-red-700
+                                        {% elif publicacion.categoria == 'bienestar' %} bg-green-100 text-green-700
+                                        {% elif publicacion.categoria == 'evento' %} bg-purple-100 text-purple-700
+                                        {% elif publicacion.categoria == 'informacion' %} bg-blue-100 text-blue-700
+                                        {% else %} bg-gray-100 text-gray-700{% endif %}">
+                                        {{ publicacion.get_categoria_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menú 3 puntos -->
                         <div class="relative">
-                            <button onclick="toggleMenu({{ publicacion.id }})" class="p-2 hover:bg-gray-100 rounded-full">
-                                <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                            <button onclick="toggleMenu({{ publicacion.id }})"
+                                    class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                                 </svg>
                             </button>
-                            <div id="menu-{{ publicacion.id }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-10 border border-gray-200">
-                                <a href="{% url 'publicaciones:eliminar_publicacion' publicacion.id %}" onclick="return confirm('¿Estás seguro de eliminar esta publicación?')" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">🗑️ Eliminar publicación</a>
+                            <div id="menu-{{ publicacion.id }}" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl z-10 border border-gray-100 overflow-hidden">
+                                <a href="{% url 'publicaciones:eliminar_publicacion' publicacion.id %}"
+                                   onclick="return confirm('¿Estás seguro de eliminar esta publicación?')"
+                                   class="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/>
+                                    </svg>
+                                    Eliminar publicación
+                                </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Badge categoría -->
-                    <div class="mt-2">
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold inline-block
-                            {% if publicacion.categoria == 'salud' %} bg-red-100 text-red-700
-                            {% elif publicacion.categoria == 'bienestar' %} bg-green-100 text-green-700
-                            {% elif publicacion.categoria == 'evento' %} bg-purple-100 text-purple-700
-                            {% elif publicacion.categoria == 'informacion' %} bg-blue-100 text-blue-700
-                            {% else %} bg-gray-100 text-gray-700 {% endif %}">
-                            {{ publicacion.get_categoria_display }}
-                        </span>
+                    <!-- Contenido -->
+                    <div class="px-4 pb-3">
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ publicacion.titulo }}</h3>
+                        <p class="text-gray-700 text-sm whitespace-pre-line leading-relaxed">{{ publicacion.contenido }}</p>
                     </div>
 
-                    <!-- Título y contenido -->
-                    <div class="mt-4"><h3 class="text-xl font-bold text-gray-800">{{ publicacion.titulo }}</h3></div>
-                    <div class="mt-3 text-gray-700 whitespace-pre-line">{{ publicacion.contenido }}</div>
-
-                    <!-- Media -->
+                    <!-- MEDIA GRID -->
                     {% if publicacion.archivos.all %}
                     {% with total_media=publicacion.archivos.all|length %}
-                    <div class="{% if total_media == 1 %}media-grid-1{% elif total_media == 2 %}media-grid-2{% elif total_media == 3 %}media-grid-3{% elif total_media == 4 %}media-grid-4{% else %}media-grid-5plus{% endif %} mt-3">
+                    <div class="
+                        {% if total_media == 1 %}media-grid-1
+                        {% elif total_media == 2 %}media-grid-2
+                        {% elif total_media == 3 %}media-grid-3
+                        {% elif total_media == 4 %}media-grid-4
+                        {% else %}media-grid-5plus{% endif %}
+                    ">
                         {% for archivo in publicacion.archivos.all|slice:":5" %}
                             {% if archivo.tipo == 'imagen' %}
                             <div class="media-item">
-                                <img src="{{ archivo.archivo.url }}" alt="{{ publicacion.titulo }}" onclick="abrirMediaModal({{ publicacion.id }}, {{ forloop.counter0 }})">
+                                <img src="{{ archivo.archivo.url }}" alt="{{ publicacion.titulo }}"
+                                     onclick="abrirMediaModal({{ publicacion.id }}, {{ forloop.counter0 }})">
                                 {% if forloop.last and total_media > 5 %}
                                 <div class="media-overlay" onclick="abrirMediaModal({{ publicacion.id }}, {{ forloop.counter0 }})">+{{ total_media|add:"-5" }}</div>
                                 {% endif %}
@@ -244,7 +1397,7 @@
                             <div class="media-item video-item">
                                 <video src="{{ archivo.archivo.url }}" class="w-full h-full object-cover"></video>
                                 <div class="video-play-overlay" onclick="abrirMediaModal({{ publicacion.id }}, {{ forloop.counter0 }})">
-                                    <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
                                         <circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.9"/>
                                         <path d="M8 5v14l11-7z" fill="#000"/>
                                     </svg>
@@ -256,358 +1409,981 @@
                             {% endif %}
                         {% endfor %}
                     </div>
+
                     <script>
                         inicializarMediaPublicacion({{ publicacion.id }}, [
-                            {% for archivo in publicacion.archivos.all %}{tipo:'{{ archivo.tipo }}',url:'{{ archivo.archivo.url }}',alt:'{{ publicacion.titulo|escapejs }}'}{% if not forloop.last %},{% endif %}{% endfor %}
+                            {% for archivo in publicacion.archivos.all %}
+                            { tipo: '{{ archivo.tipo }}', url: '{{ archivo.archivo.url }}', alt: '{{ publicacion.titulo|escapejs }}' }{% if not forloop.last %},{% endif %}
+                            {% endfor %}
                         ]);
                     </script>
                     {% endwith %}
                     {% endif %}
 
-                    <!-- Contadores -->
-                    <div class="flex justify-between items-center py-2 text-sm text-gray-500 border-t border-gray-200 mt-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg>
+                    <!-- Acciones -->
+                    <div class="px-4 pb-3">
+                        <!-- Contadores -->
+                        <div class="flex justify-between items-center py-2 text-sm text-gray-500 border-b border-gray-200">
+                            <div class="flex items-center gap-2">
+                                <div class="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    </svg>
+                                </div>
+                                <!-- ✅ ID unificado: likes-count-ID (usado por reaccionar()) -->
+                                <span id="likes-count-{{ publicacion.id }}">{{ publicacion.likes.count }}</span> personas
                             </div>
-                            <span id="likes-{{ publicacion.id }}">{{ publicacion.total_likes }}</span> personas
+                            <!-- ✅ ID unificado: comentarios-count-ID (usado por enviarComentario()) -->
+                            <span id="comentarios-count-{{ publicacion.id }}">{{ publicacion.comentarios.count }} comentarios</span>
                         </div>
-                        <span class="hover:underline cursor-pointer" onclick="openModal({{ publicacion.id }})">
-                            <span id="total-comentarios-{{ publicacion.id }}">{{ publicacion.total_comentarios }}</span> comentarios
-</span>
-                    </div>
 
-                    <!-- Botones -->
-                    <div class="flex items-center justify-around pt-1 border-t border-gray-100">
-                        <button onclick="reaccionar({{ publicacion.id }})" id="btn-like-{{ publicacion.id }}" class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
-                            Me gusta
-                        </button>
-                        <button onclick="openModal({{ publicacion.id }})" class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                            Comentar
-                        </button>
-                        <button onclick="compartir({{ publicacion.id }})" class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                            Compartir
-                        </button>
-                    </div>
+                        <!-- Botones -->
+                        <div class="flex items-center justify-around pt-1">
 
-                </div><!-- fin .bg-white publicación -->
+                            <!-- ME GUSTA -->
+                            <button onclick="reaccionar({{ publicacion.id }})"
+                                    id="btn-like-{{ publicacion.id }}"
+                                    class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm
+                                           {% if usuario in publicacion.likes.all %}text-blue-600{% endif %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
+                                </svg>
+                                Me gusta
+                            </button>
 
-                <!-- Modal comentarios (FUERA de la card, dentro del for) -->
-                <div id="modal-{{ publicacion.id }}" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
-                    <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[80vh] flex flex-col">
-                        <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 class="font-bold text-lg">Comentarios</h3>
-                            <button onclick="closeModal({{ publicacion.id }})" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 transition">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <!-- COMENTAR -->
+                            <button onclick="openModal({{ publicacion.id }})"
+                                    class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Comentar
+                            </button>
+
+                            <!-- COMPARTIR -->
+                            <button onclick="compartir({{ publicacion.id }})"
+                                    class="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-gray-100 transition text-gray-600 font-medium text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                                Compartir
                             </button>
                         </div>
-                        <div class="p-4 space-y-3 overflow-y-auto flex-1" id="lista-comentarios-{{ publicacion.id }}">
-                            {% for comentario in publicacion.comentarios.all %}
-                            <div class="flex items-start gap-3" id="comentario-{{ comentario.id }}">
-                                {% if comentario.get_autor_foto %}
-                                <img src="{{ comentario.get_autor_foto }}" class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">
-                                {% else %}
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">{{ comentario.get_autor_nombre|first|upper }}</div>
-                                {% endif %}
-                                <div class="flex-1">
-                                    <div class="bg-gray-100 rounded-2xl px-4 py-2">
-                                        <p class="font-semibold text-sm text-gray-900">{{ comentario.get_autor_nombre }}</p>
-                                        <p class="text-gray-700 mt-0.5">{{ comentario.contenido }}</p>
+                    </div>
+
+                    <!-- ============================================ -->
+                    <!-- MODAL COMENTARIOS (AJAX, sin recarga)       -->
+                    <!-- ============================================ -->
+                    <div id="modal-{{ publicacion.id }}" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+                        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[80vh] flex flex-col">
+
+                            <!-- Header modal -->
+                            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                                <h3 class="font-bold text-lg">Comentarios de {{ publicacion.autor.nombre }}</h3>
+                                <button onclick="closeModal({{ publicacion.id }})"
+                                        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 transition">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Lista de comentarios -->
+                            <div class="p-4 space-y-3 overflow-y-auto flex-1" id="lista-comentarios-{{ publicacion.id }}">
+                                {% for comentario in publicacion.comentarios.all %}
+                                <!-- ✅ CAMBIO 1: id único por comentario para poder eliminarlo del DOM -->
+                                <div class="flex items-start gap-3" id="comentario-{{ comentario.id }}">
+                                    {% if comentario.get_autor_foto %}
+                                    <img src="{{ comentario.get_autor_foto }}" class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">
+                                    {% else %}
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+                                        {{ comentario.get_autor_nombre|first|upper }}
                                     </div>
-                                    <div class="flex items-center gap-2 mt-1 px-2 text-xs text-gray-500">
-                                        <span>{{ comentario.fecha_creacion|timesince }} atrás</span>
-                                        {% if comentario.get_autor_documento == usuario.documento %}
-                                        <button onclick="eliminarComentario({{ comentario.id }}, {{ publicacion.id }})"
-                                                class="ml-auto flex items-center gap-1 text-red-400 hover:text-red-600 font-semibold transition-colors px-2 py-0.5 rounded-lg hover:bg-red-50">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                            Eliminar
-                                        </button>
-                                        {% endif %}
+                                    {% endif %}
+                                    <div class="flex-1">
+                                        <div class="bg-gray-100 rounded-2xl px-4 py-2">
+                                            <p class="font-semibold text-sm text-gray-900">{{ comentario.get_autor_nombre }}</p>
+                                            <p class="text-gray-700 mt-0.5">{{ comentario.contenido }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-4 mt-1 px-2 text-xs text-gray-500">
+                                            <span>{{ comentario.fecha_creacion|timesince }} atrás</span>
+                                            <!-- Botón eliminar: visible si eres autor del comentario o de la publicación -->
+                                            {% if comentario.get_autor_documento == usuario.numero_documento or comentario.get_autor_documento == usuario.documento or publicacion.autor == usuario %}
+                                            <button onclick="eliminarComentario({{ comentario.id }}, {{ publicacion.id }})"
+                                                    class="ml-auto flex items-center gap-1 text-red-400 hover:text-red-600 font-semibold transition-colors px-2 py-0.5 rounded-lg hover:bg-red-50">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                Eliminar
+                                            </button>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
+                                {% empty %}
+                                <div class="text-center py-8" id="vacio-{{ publicacion.id }}">
+                                    <div class="text-5xl mb-3">💬</div>
+                                    <p class="text-gray-600 font-semibold">Sé el primero en comentar</p>
+                                    <p class="text-gray-400 text-sm mt-1">Comparte tu opinión sobre esta publicación</p>
+                                </div>
+                                {% endfor %}
                             </div>
-                            {% empty %}
-                            <div class="text-center py-8" id="vacio-{{ publicacion.id }}">
-                                <div class="text-5xl mb-3">💬</div>
-                                <p class="text-gray-600 font-semibold">Sé el primero en comentar</p>
+
+                            <!-- Input comentario (AJAX) -->
+                            <div class="flex items-center gap-3 p-4 border-t bg-gray-50">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                    {% if usuario.foto %}
+                                    <img src="{{ usuario.foto.url }}" class="w-10 h-10 rounded-full object-cover">
+                                    {% else %}
+                                    <span class="text-white font-bold text-sm">{{ usuario.nombre|first|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <input
+                                    class="input-comentario flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none focus:bg-white focus:ring-2 focus:ring-green-500 transition text-sm"
+                                    placeholder="Escribe un comentario..."
+                                    data-id="{{ publicacion.id }}"
+                                    onkeypress="if(event.key==='Enter') enviarComentario({{ publicacion.id }})">
+                                <button
+                                    onclick="enviarComentario({{ publicacion.id }})"
+                                    class="bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition flex-shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
                             </div>
-                            {% endfor %}
-                        </div>
-                        <div class="flex items-center gap-3 p-4 border-t bg-gray-50">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                {% if usuario.foto %}<img src="{{ usuario.foto.url }}" class="w-10 h-10 rounded-full object-cover">{% else %}<span class="text-white font-bold text-sm">{{ usuario.nombre|first|upper }}</span>{% endif %}
-                            </div>
-                            <input class="input-comentario flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none focus:bg-white focus:ring-2 focus:ring-green-500 transition text-sm"
-                                   placeholder="Escribe un comentario..."
-                                   data-id="{{ publicacion.id }}"
-                                   onkeypress="if(event.key==='Enter') enviarComentario({{ publicacion.id }})">
-                            <button onclick="enviarComentario({{ publicacion.id }})" class="bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition flex-shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                            </button>
                         </div>
                     </div>
-                </div><!-- fin modal comentarios -->
 
-                {% endfor %}<!-- fin for publicaciones -->
+                </div><!-- fin publicacion-card -->
+                {% endfor %}
 
-            {% else %}
-                <div class="bg-white rounded-3xl shadow p-8 text-center">
-                    <div class="text-6xl mb-4">📝</div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">No tienes publicaciones aún</h3>
-                    <p class="text-gray-500 mb-4">Tus publicaciones aparecerán aquí</p>
-                    <a href="{% url 'publicaciones:crear_publicacion' %}" class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-md">➕ Crear mi primera publicación</a>
+                {% else %}
+                <!-- Sin publicaciones -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">📝</div>
+                    <h3 style="font-family:'Sora',sans-serif" class="text-lg font-700 text-gray-700 mb-2">Aún no tienes publicaciones</h3>
+                    <p class="text-gray-500 text-sm mb-5">Comparte información útil con la comunidad del SENA</p>
+                    <a href="{% url 'publicaciones:crear_publicacion' %}" class="action-btn action-btn-primary inline-flex">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Crear primera publicación
+                    </a>
                 </div>
+                {% endif %}
+            </div>
             {% endif %}
+
         </div>
-        {% endif %}
-
-    </div><!-- fin container -->
-
-    <!-- Modal imagen grande -->
-    <div id="imagenModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center" onclick="cerrarImagenModal()">
-        <button onclick="cerrarImagenModal()" class="absolute top-4 right-4 text-white text-4xl hover:text-gray-300">×</button>
-        <img id="imagenModalSrc" src="" class="max-w-full max-h-full object-contain p-4">
     </div>
 
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-bottom-nav">
+        <div class="mobile-bottom-nav-inner">
+            <a href="{% url 'sesion:home' %}" class="mob-nav-btn">
+                <div class="mob-nav-icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M3 9.75L12 3l9 6.75V21H3V9.75z" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                Inicio
+            </a>
+            <a href="{% url 'chat:lista_chats' %}" class="mob-nav-btn">
+                <div class="mob-nav-icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6A8.38 8.38 0 0111.5 3h1a8.5 8.5 0 018.5 8.5z"/>
+                    </svg>
+                </div>
+                Chat
+            </a>
+            <a href="{% url 'sesion:amigos' %}" class="mob-nav-btn">
+                <div class="mob-nav-icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="7" cy="7" r="4"/>
+                        <path d="M1 21v-2a6 6 0 016-6h0a6 6 0 016 6v2"/>
+                        <circle cx="17" cy="9" r="3.5"/>
+                        <path d="M14 21v-2a4 4 0 014-4h0a4 4 0 014 4v2"/>
+                    </svg>
+                </div>
+                Amigos
+            </a>
+            <a href="{% url 'notificaciones:lista' %}" class="mob-nav-btn">
+                <div class="mob-nav-icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+                    </svg>
+                </div>
+                Alertas
+            </a>
+            <a href="{% url 'perfil:perfiles' %}" class="mob-nav-btn active">
+                <div class="mob-nav-icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a5 5 0 100-10 5 5 0 000 10zm7 8c0-4-3-7-7-7s-7 3-7 7"/>
+                    </svg>
+                </div>
+                Perfil
+            </a>
+        </div>
+    </nav>
+
+    <!-- ========================= -->
+    <!--         SCRIPTS           -->
+    <!-- ========================= -->
+
+    <!-- Mobile search toggle -->
     <script>
-    setTimeout(() => {
-        document.querySelectorAll('.messages-container div').forEach(msg => {
-            msg.style.transition = 'opacity 0.6s ease';
-            msg.style.opacity = '0';
-            setTimeout(() => msg.remove(), 600);
+        document.getElementById("btnSearch")?.addEventListener("click", () => {
+            document.getElementById("mobileSearchBox").classList.toggle("hidden");
         });
-    }, 4000);
 
-    function toggleMenu(publicacionId) {
-        const menu = document.getElementById(`menu-${publicacionId}`);
-        document.querySelectorAll('[id^="menu-"]').forEach(m => { if (m.id !== `menu-${publicacionId}`) m.classList.add('hidden'); });
-        menu.classList.toggle('hidden');
-    }
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('button')) document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
-    });
-    function abrirImagenModal(src) { document.getElementById('imagenModalSrc').src = src; document.getElementById('imagenModal').classList.remove('hidden'); }
-    function cerrarImagenModal() { document.getElementById('imagenModal').classList.add('hidden'); }
+        setTimeout(() => {
+            document.querySelectorAll('.messages-container div').forEach(msg => {
+                msg.style.transition = 'opacity 0.6s ease';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 600);
+            });
+        }, 4000);
 
-    function cerrarMenus(e) {
-        const menuP = document.getElementById("menuPerfil"), btnP = document.getElementById("btnPerfil");
-        const menuN = document.getElementById("menuNotificaciones"), btnN = document.getElementById("btnNotificaciones");
-        if (menuP && !menuP.contains(e.target) && !btnP.contains(e.target)) menuP.classList.add("hidden");
-        if (menuN && !menuN.contains(e.target) && !btnN.contains(e.target)) menuN.classList.add("hidden");
-    }
-    document.getElementById("btnPerfil")?.addEventListener("click", () => { document.getElementById("menuPerfil").classList.toggle("hidden"); document.getElementById("menuNotificaciones").classList.add("hidden"); });
-    document.getElementById("btnNotificaciones").addEventListener("click", () => { document.getElementById("menuNotificaciones").classList.toggle("hidden"); document.getElementById("menuPerfil")?.classList.add("hidden"); });
-    document.addEventListener("click", cerrarMenus);
+        // Toggle menú 3 puntos publicación
+        function toggleMenu(publicacionId) {
+            const menu = document.getElementById(`menu-${publicacionId}`);
+            document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                if (m.id !== `menu-${publicacionId}`) m.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('button[onclick]')) {
+                document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+            }
+        });
+    </script>
+
+    <!-- Menús header -->
+    <script>
+        document.getElementById("btnPerfil")?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("menuPerfil").classList.toggle("show");
+            document.getElementById("menuNotificaciones").classList.remove("show");
+        });
+
+        document.getElementById("btnNotificaciones")?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("menuNotificaciones").classList.toggle("show");
+            document.getElementById("menuPerfil")?.classList.remove("show");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest('#menuPerfil') && !e.target.closest('#btnPerfil'))
+                document.getElementById("menuPerfil")?.classList.remove("show");
+            if (!e.target.closest('#menuNotificaciones') && !e.target.closest('#btnNotificaciones'))
+                document.getElementById("menuNotificaciones")?.classList.remove("show");
+        });
     </script>
 
     <script>
-    let notificationInterval;
     document.addEventListener('DOMContentLoaded', function() {
-        cargarNotificaciones();
-        notificationInterval = setInterval(cargarNotificaciones, 30000);
-        document.addEventListener('visibilitychange', function() { if (!document.hidden) cargarNotificaciones(); });
+        document.querySelectorAll('.home-reload-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const currentPath = window.location.pathname;
+                const isHomePage = currentPath.includes('home') || currentPath.includes('inicio') ||
+                                   currentPath === '/' || currentPath === '/feed/' || currentPath === '/feed/inicio/';
+                if (isHomePage) {
+                    e.preventDefault();
+                    button.style.transition = 'transform 0.1s ease';
+                    button.style.transform = 'scale(0.95)';
+                    mostrarToastRecarga();
+                    setTimeout(() => { button.style.transform = 'scale(1)'; location.reload(); }, 200);
+                }
+            });
+        });
+
+        function mostrarToastRecarga() {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl z-50 font-semibold flex items-center gap-2';
+            toast.innerHTML = `<svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Actualizando...</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translate(-50%,-20px)'; setTimeout(()=>toast.remove(),300); }, 3000);
+        }
     });
-    async function cargarNotificaciones() {
-        try {
-            const response = await fetch("{% url 'notificaciones:obtener_notificaciones' %}");
-            const data = await response.json();
-            actualizarBadge(data.count);
-            if (data.notificaciones && data.notificaciones.length > 0) renderizarNotificaciones(data.notificaciones);
-            else mostrarNotificacionesVacias();
-        } catch (error) { mostrarErrorNotificaciones(); }
+    </script>
+
+    <!-- ============================================ -->
+    <!-- UTILITARIOS GLOBALES (getCookie, mostrarToast) -->
+    <!-- ============================================ -->
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            for (let cookie of document.cookie.split(';')) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
-    function actualizarBadge(count) {
-        const badge = document.getElementById('notificationBadge');
-        if (badge) { if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
-    }
-    function renderizarNotificaciones(notificaciones) {
-        const lista = document.getElementById('listaNotificaciones');
-        const iconos = {'solicitud_amistad':'👋','amistad_aceptada':'✅','nueva_publicacion':'📝','comentario':'💬','like':'❤️'};
-        const colores = {'solicitud_amistad':'bg-green-50 border-l-4 border-green-500','amistad_aceptada':'bg-blue-50 border-l-4 border-blue-500','nueva_publicacion':'bg-purple-50 border-l-4 border-purple-500','comentario':'bg-yellow-50 border-l-4 border-yellow-500','like':'bg-red-50 border-l-4 border-red-500'};
-        lista.innerHTML = notificaciones.map(notif => `
-            <div class="${colores[notif.tipo]||'bg-white'} p-4 hover:bg-gray-100 transition cursor-pointer border-b border-gray-200" onclick="irANotificacion(${notif.id},${notif.publicacion_id||null})">
-                <div class="flex items-start gap-3">
-                    <img src="${notif.emisor_foto||'{% static "img/default-avatar.png" %}'}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1"><span class="text-lg">${iconos[notif.tipo]||'📢'}</span><span class="text-xs font-semibold text-gray-500 uppercase">${getTipoNombre(notif.tipo)}</span></div>
-                        <p class="text-sm text-gray-800 mb-1">${notif.mensaje}</p>
-                        <p class="text-xs text-gray-500">${calcularTiempo(notif.fecha)}</p>
-                    </div>
-                </div>
-            </div>`).join('');
-    }
-    function mostrarNotificacionesVacias() { document.getElementById('listaNotificaciones').innerHTML = `<div class="flex flex-col items-center justify-center py-12"><div class="text-5xl mb-3">🔔</div><p class="text-gray-600 font-semibold mb-1">Todo al día</p><p class="text-gray-400 text-sm">No tienes notificaciones nuevas</p></div>`; }
-    function mostrarErrorNotificaciones() { document.getElementById('listaNotificaciones').innerHTML = `<div class="flex flex-col items-center justify-center py-12"><div class="text-5xl mb-3">⚠️</div><p class="text-gray-600 font-semibold mb-1">Error al cargar</p><button onclick="cargarNotificaciones()" class="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm">Reintentar</button></div>`; }
-    function getTipoNombre(tipo) { return {'solicitud_amistad':'Solicitud','amistad_aceptada':'Aceptada','nueva_publicacion':'Publicación','comentario':'Comentario','like':'Me gusta'}[tipo]||tipo; }
-    function calcularTiempo(fecha) {
-        const diff = Math.floor((new Date() - new Date(fecha)) / 1000);
-        if (diff < 60) return 'Justo ahora';
-        if (diff < 3600) return `Hace ${Math.floor(diff/60)} min`;
-        if (diff < 86400) return `Hace ${Math.floor(diff/3600)} h`;
-        if (diff < 604800) return `Hace ${Math.floor(diff/86400)} días`;
-        return new Date(fecha).toLocaleDateString('es-ES',{day:'numeric',month:'short'});
-    }
-    async function irANotificacion(notifId, publicacionId) {
-        try { await fetch(`{% url 'notificaciones:marcar_leida' 0 %}`.replace('0',notifId),{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}); } catch(e){}
-        window.location.href = publicacionId ? `/publicaciones/${publicacionId}/` : "{% url 'notificaciones:lista' %}";
-    }
-    async function marcarTodasLeidasHeader() {
-        try {
-            const r = await fetch("{% url 'notificaciones:marcar_todas_leidas' %}",{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}});
-            if (r.ok) { actualizarBadge(0); cargarNotificaciones(); mostrarToast('✓ Notificaciones marcadas como leídas','success'); }
-        } catch(e) { mostrarToast('❌ Error al marcar notificaciones','error'); }
-    }
-    function mostrarToast(mensaje, tipo='success') {
-        const colores = {success:'bg-green-500',error:'bg-red-500',warning:'bg-yellow-500',info:'bg-blue-500'};
+
+    function mostrarToast(mensaje, tipo = 'success') {
+        const colores = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
         const toast = document.createElement('div');
-        toast.className = `fixed bottom-6 right-6 ${colores[tipo]} text-white px-6 py-3 rounded-xl shadow-2xl z-50`;
+        toast.className = `fixed bottom-6 right-6 ${colores[tipo]} text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-slide-in`;
         toast.textContent = mensaje;
         document.body.appendChild(toast);
-        setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateX(400px)'; setTimeout(()=>toast.remove(),300); }, 3000);
-    }
-    function getCookie(name) {
-        let v=null;
-        if(document.cookie&&document.cookie!==''){document.cookie.split(';').forEach(c=>{c=c.trim();if(c.substring(0,name.length+1)===(name+'=')){v=decodeURIComponent(c.substring(name.length+1));}});}
-        return v;
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
     </script>
 
+    <!-- ============================================ -->
+    <!-- LIKES, COMENTARIOS Y COMPARTIR (AJAX)       -->
+    <!-- ============================================ -->
     <script>
-    const publicacionesMedia = {};
-    function inicializarMediaPublicacion(publicacionId, archivos) { publicacionesMedia[publicacionId] = archivos; }
-    function abrirMediaModal(publicacionId, index) {
-        const archivos = publicacionesMedia[publicacionId];
-        if (!archivos || !archivos[index]) return;
-        const modal = crearModalMedia(publicacionId, index, archivos.length);
-        document.body.appendChild(modal);
-        document.body.style.overflow = 'hidden';
-        cargarArchivoEnModal(modal, archivos[index]);
-    }
-    function crearModalMedia(publicacionId, indexActual, totalArchivos) {
-        const modal = document.createElement('div');
-        modal.className = 'modal-media';
-        modal.dataset.publicacionId = publicacionId;
-        modal.dataset.currentIndex = indexActual;
-        modal.onclick = (e) => { if (e.target === modal) cerrarModal(modal); };
-        modal.innerHTML = `<button class="modal-close-btn" onclick="cerrarModal(this.parentElement)">×</button>
-            ${totalArchivos > 1 ? `<div class="modal-counter"><span id="modal-counter-text">${indexActual+1} / ${totalArchivos}</span></div>
-            <button class="modal-nav-btn prev" onclick="navegarMedia(this,-1)"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg></button>
-            <button class="modal-nav-btn next" onclick="navegarMedia(this,1)"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg></button>` : ''}
-            <div id="modal-content-container"></div>`;
-        return modal;
-    }
-    function cargarArchivoEnModal(modal, archivo) {
-        const c = modal.querySelector('#modal-content-container');
-        if (archivo.tipo === 'imagen') c.innerHTML = `<img src="${archivo.url}" alt="${archivo.alt||'Imagen'}" onclick="event.stopPropagation()">`;
-        else if (archivo.tipo === 'video') c.innerHTML = `<video controls autoplay onclick="event.stopPropagation()"><source src="${archivo.url}" type="video/mp4"></video>`;
-    }
-    function navegarMedia(btn, direccion) {
-        const modal = btn.closest('.modal-media');
-        const archivos = publicacionesMedia[modal.dataset.publicacionId];
-        let i = parseInt(modal.dataset.currentIndex) + direccion;
-        if (i < 0 || i >= archivos.length) return;
-        modal.dataset.currentIndex = i;
-        const counter = modal.querySelector('#modal-counter-text');
-        if (counter) counter.textContent = `${i+1} / ${archivos.length}`;
-        const btnPrev = modal.querySelector('.modal-nav-btn.prev'), btnNext = modal.querySelector('.modal-nav-btn.next');
-        if (btnPrev) btnPrev.disabled = i === 0;
-        if (btnNext) btnNext.disabled = i === archivos.length - 1;
-        cargarArchivoEnModal(modal, archivos[i]);
-    }
-    function cerrarModal(modal) {
-        modal.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
-        modal.remove();
-        document.body.style.overflow = 'auto';
-    }
-    document.addEventListener('keydown', (e) => {
-        const modal = document.querySelector('.modal-media');
-        if (!modal) return;
-        if (e.key === 'Escape') cerrarModal(modal);
-        else if (e.key === 'ArrowLeft') { const b = modal.querySelector('.modal-nav-btn.prev'); if (b && !b.disabled) navegarMedia(b,-1); }
-        else if (e.key === 'ArrowRight') { const b = modal.querySelector('.modal-nav-btn.next'); if (b && !b.disabled) navegarMedia(b,1); }
-    });
-    </script>
-
-    <script>
-    function reaccionar(id) {
-        fetch(`/publicaciones/like/${id}/`, {method:'POST', headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/json'}})
-        .then(r=>r.json())
-        .then(data => {
-            document.getElementById(`likes-${id}`).innerText = data.likes_count;
-            const btn = document.getElementById(`btn-like-${id}`);
-            if (data.liked) { btn.classList.add('text-blue-600'); btn.classList.remove('text-gray-600'); }
-            else { btn.classList.add('text-gray-600'); btn.classList.remove('text-blue-600'); }
-        })
-        .catch(() => mostrarToast('❌ Error al procesar reacción','error'));
-    }
+    // ── MODAL DE COMENTARIOS ────────────────────────────────────────
     function openModal(id) {
         document.getElementById(`modal-${id}`).classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         const lista = document.getElementById(`lista-comentarios-${id}`);
         if (lista) lista.scrollTop = lista.scrollHeight;
     }
-    function closeModal(id) { document.getElementById(`modal-${id}`).classList.add('hidden'); document.body.style.overflow = 'auto'; }
+
+    function closeModal(id) {
+        document.getElementById(`modal-${id}`).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id^="modal-"]').forEach(modal => {
+                if (!modal.id.includes('mediaModal')) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+    });
+
+    // ── LIKES (POST con CSRF + feedback visual) ────────────────────
+    function reaccionar(id) {
+        fetch(`/publicaciones/like/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const contador = document.getElementById(`likes-count-${id}`);
+            if (contador) contador.innerText = data.likes_count;
+
+            const btn = document.getElementById(`btn-like-${id}`);
+            if (btn) {
+                if (data.liked) {
+                    btn.classList.add('text-blue-600');
+                    btn.classList.remove('text-gray-600');
+                } else {
+                    btn.classList.add('text-gray-600');
+                    btn.classList.remove('text-blue-600');
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            mostrarToast('❌ Error al procesar reacción', 'error');
+        });
+    }
+
+    // ── COMPARTIR ──────────────────────────────────────────────────
+    function compartir(id) {
+        const url = window.location.origin + '/publicaciones/' + id + '/';
+        if (navigator.share) {
+            navigator.share({ title: 'InfoSena', url: url });
+        } else {
+            navigator.clipboard.writeText(url).then(() => {
+                mostrarToast('✅ Enlace copiado al portapapeles', 'success');
+            }).catch(() => {
+                mostrarToast('❌ No se pudo copiar el enlace', 'error');
+            });
+        }
+    }
+
+    // ── ENVIAR COMENTARIO (AJAX, sin recarga) ──────────────────────
     function enviarComentario(id) {
         const input = document.querySelector(`.input-comentario[data-id="${id}"]`);
         const contenido = input.value.trim();
         if (!contenido) return;
+
         input.disabled = true;
+
         const formData = new FormData();
         formData.append('contenido', contenido);
         formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-        fetch(`/publicaciones/comentar/${id}/`, {method:'POST', body:formData})
-        .then(r=>r.json())
+
+        fetch(`/publicaciones/comentar/${id}/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
         .then(data => {
             input.disabled = false;
-            if (!data.ok) { mostrarToast('❌ '+(data.error||'Error'),'error'); return; }
+
+            if (!data.ok) {
+                mostrarToast('❌ ' + (data.error || 'Error al comentar'), 'error');
+                return;
+            }
+
             const lista = document.getElementById(`lista-comentarios-${id}`);
+
+            // Quitar mensaje de "sé el primero" si existe
             const vacio = document.getElementById(`vacio-${id}`);
             if (vacio) vacio.remove();
+
+            // Agregar el nuevo comentario al DOM
             const div = document.createElement('div');
-            div.className = 'flex items-start gap-3';
-            if (data.id) div.id = 'comentario-' + data.id;
-            div.innerHTML = `${data.foto ? `<img src="${data.foto}" class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">` : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">${data.autor.charAt(0).toUpperCase()}</div>`}
-                <div class="flex-1"><div class="bg-gray-100 rounded-2xl px-4 py-2"><p class="font-semibold text-sm text-gray-900">${data.autor}</p><p class="text-gray-700 mt-0.5">${data.contenido}</p></div><div class="flex items-center gap-2 mt-1 px-2 text-xs text-gray-500"><span>Justo ahora</span>${data.id ? `<button onclick="eliminarComentario(${data.id}, ${id})" class="ml-auto flex items-center gap-1 text-red-400 hover:text-red-600 font-semibold px-2 py-0.5 rounded-lg hover:bg-red-50"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Eliminar</button>` : ''}</div></div>`;
+            div.className = 'flex items-start gap-3 animate-fade-in';
+            // ✅ ID del nuevo comentario para permitir su eliminación inmediata
+            if (data.id) div.id = `comentario-${data.id}`;
+            div.innerHTML = `
+                <div class="flex items-start gap-3" style="width:100%">
+                    ${data.foto
+                        ? `<img src="${data.foto}" class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">`
+                        : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+                               ${data.autor.charAt(0).toUpperCase()}
+                           </div>`
+                    }
+                    <div class="flex-1">
+                        <div class="bg-gray-100 rounded-2xl px-4 py-2">
+                            <p class="font-semibold text-sm text-gray-900">${data.autor}</p>
+                            <p class="text-gray-700 mt-0.5">${data.contenido}</p>
+                        </div>
+                        <div class="flex items-center gap-4 mt-1 px-2 text-xs text-gray-500">
+                            <span>Justo ahora</span>
+                            ${data.id
+                                ? `<button onclick="eliminarComentario(${data.id}, ${id})"
+                                          class="ml-auto flex items-center gap-1 text-red-400 hover:text-red-600 font-semibold transition-colors px-2 py-0.5 rounded-lg hover:bg-red-50">
+                                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                       </svg>
+                                       Eliminar
+                                   </button>`
+                                : ''
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+
             lista.appendChild(div);
             lista.scrollTop = lista.scrollHeight;
             input.value = '';
-            const total = document.getElementById(`total-comentarios-${id}`);
-            if (total) total.innerText = data.total;
+
+            // Actualizar contador de comentarios
+            const totalEl = document.getElementById(`comentarios-count-${id}`);
+            if (totalEl && data.total) {
+                totalEl.innerText = `${data.total} comentarios`;
+            }
         })
-        .catch(() => { input.disabled = false; mostrarToast('❌ Error al comentar','error'); });
+        .catch(err => {
+            input.disabled = false;
+            console.error(err);
+            mostrarToast('❌ Error al enviar comentario', 'error');
+        });
     }
-        // ELIMINAR COMENTARIO via AJAX
-        function eliminarComentario(comentarioId, publicacionId) {
-            if (!confirm('Eliminar este comentario?')) return;
-            fetch('/publicaciones/comentario/' + comentarioId + '/eliminar/', {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.ok) {
-                    const el = document.getElementById('comentario-' + comentarioId);
-                    if (el) { el.style.transition='opacity 0.3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }
-                    const total = document.getElementById('total-comentarios-' + publicacionId);
-                    if (total) total.innerText = Math.max(0, parseInt(total.innerText)-1);
-                    mostrarToast('Comentario eliminado', 'success');
-                } else { mostrarToast(data.error||'No puedes eliminar este comentario','error'); }
-            }).catch(()=>mostrarToast('Error al eliminar','error'));
+
+    // ── ELIMINAR COMENTARIO (AJAX, sin recarga) ────────────────────
+    // ✅ CAMBIO 3: función completa traída del perfil anterior
+    function eliminarComentario(comentarioId, publicacionId) {
+        if (!confirm('¿Eliminar este comentario?')) return;
+
+        fetch(`/publicaciones/comentario/${comentarioId}/eliminar/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                // Animar y remover el elemento del DOM
+                const el = document.getElementById(`comentario-${comentarioId}`);
+                if (el) {
+                    el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateX(-10px)';
+                    setTimeout(() => el.remove(), 300);
+                }
+                // Actualizar contador de comentarios
+                const totalEl = document.getElementById(`comentarios-count-${publicacionId}`);
+                if (totalEl) {
+                    const actual = parseInt(totalEl.innerText) || 0;
+                    totalEl.innerText = `${Math.max(0, actual - 1)} comentarios`;
+                }
+                mostrarToast('✅ Comentario eliminado', 'success');
+            } else {
+                mostrarToast(data.error || '❌ No puedes eliminar este comentario', 'error');
+            }
+        })
+        .catch(() => mostrarToast('❌ Error al eliminar el comentario', 'error'));
+    }
+    </script>
+
+    <!-- NOTIFICACIONES EN TIEMPO REAL -->
+    <script>
+    let notificationInterval;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarNotificaciones();
+        notificationInterval = setInterval(cargarNotificaciones, 30000);
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) cargarNotificaciones();
+        });
+    });
+
+    async function cargarNotificaciones() {
+        try {
+            const response = await fetch("{% url 'notificaciones:obtener_notificaciones' %}");
+            const data = await response.json();
+            actualizarBadge(data.count);
+            if (data.notificaciones && data.notificaciones.length > 0) {
+                renderizarNotificaciones(data.notificaciones);
+            } else {
+                mostrarNotificacionesVacias();
+            }
+        } catch (error) {
+            console.error('Error al cargar notificaciones:', error);
+            mostrarErrorNotificaciones();
+        }
+    }
+
+    function actualizarBadge(count) {
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.classList.remove('hidden'); }
+            else { badge.classList.add('hidden'); }
+        }
+    }
+
+    function renderizarNotificaciones(notificaciones) {
+        const lista = document.getElementById('listaNotificaciones');
+        const iconos = { 'solicitud_amistad':'👋','amistad_aceptada':'✅','nueva_publicacion':'📝','comentario':'💬','like':'❤️' };
+        const colores = { 'solicitud_amistad':'bg-green-50 border-l-4 border-green-500','amistad_aceptada':'bg-blue-50 border-l-4 border-blue-500','nueva_publicacion':'bg-purple-50 border-l-4 border-purple-500','comentario':'bg-yellow-50 border-l-4 border-yellow-500','like':'bg-red-50 border-l-4 border-red-500' };
+        lista.innerHTML = notificaciones.map(notif => `
+            <div class="${colores[notif.tipo] || 'bg-white'} p-4 hover:bg-gray-100 transition cursor-pointer border-b border-gray-200"
+                 onclick="irANotificacion(${notif.id}, ${notif.publicacion_id || null})">
+                <div class="flex items-start gap-3">
+                    <img src="${notif.emisor_foto || '{% static "img/default-avatar.png" %}'}" alt="${notif.emisor_nombre}"
+                         class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">${iconos[notif.tipo] || '📢'}</span>
+                            <span class="text-xs font-semibold text-gray-500 uppercase">${getTipoNombre(notif.tipo)}</span>
+                        </div>
+                        <p class="text-sm text-gray-800 mb-1">${notif.mensaje}</p>
+                        <p class="text-xs text-gray-500">${calcularTiempo(notif.fecha)}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function mostrarNotificacionesVacias() {
+        document.getElementById('listaNotificaciones').innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="text-5xl mb-3">🔔</div>
+                <p class="text-gray-600 font-semibold mb-1">Todo al día</p>
+                <p class="text-gray-400 text-sm">No tienes notificaciones nuevas</p>
+            </div>`;
+    }
+
+    function mostrarErrorNotificaciones() {
+        document.getElementById('listaNotificaciones').innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="text-5xl mb-3">⚠️</div>
+                <p class="text-gray-600 font-semibold mb-1">Error al cargar</p>
+                <button onclick="cargarNotificaciones()" class="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600">Reintentar</button>
+            </div>`;
+    }
+
+    function getTipoNombre(tipo) {
+        return { 'solicitud_amistad':'Solicitud','amistad_aceptada':'Aceptada','nueva_publicacion':'Publicación','comentario':'Comentario','like':'Me gusta' }[tipo] || tipo;
+    }
+
+    function calcularTiempo(fecha) {
+        const diff = Math.floor((new Date() - new Date(fecha)) / 1000);
+        if (diff < 60) return 'Justo ahora';
+        if (diff < 3600) return `Hace ${Math.floor(diff/60)} min`;
+        if (diff < 86400) return `Hace ${Math.floor(diff/3600)} h`;
+        if (diff < 604800) return `Hace ${Math.floor(diff/86400)} días`;
+        return new Date(fecha).toLocaleDateString('es-ES', { day:'numeric', month:'short' });
+    }
+
+    async function irANotificacion(notifId, publicacionId) {
+        try {
+            await fetch(`{% url 'notificaciones:marcar_leida' 0 %}`.replace('0', notifId), {
+                method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+        } catch(e) {}
+        window.location.href = publicacionId ? `/publicaciones/${publicacionId}/` : "{% url 'notificaciones:lista' %}";
+    }
+
+    async function marcarTodasLeidasHeader() {
+        try {
+            const response = await fetch("{% url 'notificaciones:marcar_todas_leidas' %}", {
+                method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            if (response.ok) { actualizarBadge(0); cargarNotificaciones(); mostrarToast('✓ Notificaciones marcadas como leídas','success'); }
+        } catch(e) { mostrarToast('❌ Error al marcar notificaciones','error'); }
+    }
+    </script>
+
+    <!-- BÚSQUEDA -->
+    <script>
+    const searchInput = document.getElementById('searchInput');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const searchPanel = document.getElementById('searchPanel');
+    const mobileSearchPanel = document.getElementById('mobileSearchPanel');
+    const searchResults = document.getElementById('searchResults');
+    const mobileSearchResults = document.getElementById('mobileSearchResults');
+    const searchLoading = document.getElementById('searchLoading');
+    const mobileSearchLoading = document.getElementById('mobileSearchLoading');
+    const noResults = document.getElementById('noResults');
+    const mobileNoResults = document.getElementById('mobileNoResults');
+    const emptyHistory = document.getElementById('emptyHistory');
+    const mobileEmptyHistory = document.getElementById('mobileEmptyHistory');
+    const panelTitle = document.getElementById('panelTitle');
+    const mobilePanelTitle = document.getElementById('mobilePanelTitle');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const clearMobileSearchBtn = document.getElementById('clearMobileSearchBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const clearMobileHistoryBtn = document.getElementById('clearMobileHistoryBtn');
+
+    let searchTimeout, currentQuery = '', isMobile = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarHistorial();
+        searchInput?.addEventListener('input', (e) => manejarBusqueda(e, false));
+        searchInput?.addEventListener('focus', () => mostrarPanel(false));
+        clearSearchBtn?.addEventListener('click', () => limpiarBusqueda(false));
+        clearHistoryBtn?.addEventListener('click', limpiarHistorialCompleto);
+        mobileSearchInput?.addEventListener('input', (e) => manejarBusqueda(e, true));
+        mobileSearchInput?.addEventListener('focus', () => mostrarPanel(true));
+        clearMobileSearchBtn?.addEventListener('click', () => limpiarBusqueda(true));
+        clearMobileHistoryBtn?.addEventListener('click', limpiarHistorialCompleto);
+
+        document.addEventListener('click', function(e) {
+            if (searchPanel && !searchPanel.contains(e.target) && !searchInput?.contains(e.target)) ocultarPanel(false);
+            if (mobileSearchPanel && !mobileSearchPanel.contains(e.target) && !mobileSearchInput?.contains(e.target) && !document.getElementById('mobileSearchBox')?.contains(e.target)) ocultarPanel(true);
+        });
+    });
+
+    function manejarBusqueda(e, mobile) {
+        const query = e.target.value.trim();
+        currentQuery = query; isMobile = mobile;
+        const clearBtn = mobile ? clearMobileSearchBtn : clearSearchBtn;
+        clearBtn?.classList.toggle('hidden', query.length === 0);
+        clearTimeout(searchTimeout);
+        if (query.length === 0) { cargarHistorial(); return; }
+        if (query.length < 2) return;
+        mostrarLoading(mobile);
+        searchTimeout = setTimeout(() => realizarBusqueda(query), 300);
+    }
+
+    async function realizarBusqueda(query) {
+        try {
+            const response = await fetch(`/busqueda/usuarios/?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            ocultarLoading(isMobile);
+            if (data.resultados && data.resultados.length > 0) {
+                (isMobile ? mobilePanelTitle : panelTitle).textContent = `Resultados para "${query}"`;
+                mostrarResultados(data.resultados, query, isMobile);
+            } else { mostrarSinResultados(isMobile); }
+        } catch(e) { console.error(e); ocultarLoading(isMobile); }
+    }
+
+    function mostrarResultados(resultados, query, mobile) {
+        const resultsContainer = mobile ? mobileSearchResults : searchResults;
+        (mobile ? mobileNoResults : noResults)?.classList.add('hidden');
+        (mobile ? mobileEmptyHistory : emptyHistory)?.classList.add('hidden');
+        resultsContainer?.classList.remove('hidden');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = resultados.map(usuario => `
+                <div class="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50"
+                     onclick="seleccionarUsuario('${usuario.id}','${escapeHtml(usuario.nombre)}','${usuario.tipo}')">
+                    <div class="flex items-center gap-3">
+                        ${usuario.foto ? `<img src="${usuario.foto}" alt="${escapeHtml(usuario.nombre)}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">` :
+                        `<div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-xl flex-shrink-0">${getEmojiPorTipo(usuario.tipo)}</div>`}
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-800 truncate">${resaltarTexto(usuario.nombre, query)}</p>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium ${usuario.tipo==='aprendiz'?'bg-blue-100 text-blue-700':usuario.tipo==='instructor'?'bg-purple-100 text-purple-700':'bg-green-100 text-green-700'}">${usuario.tipo_display}</span>
+                        </div>
+                        <svg width="16" height="16" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    async function cargarHistorial() {
+        try {
+            const response = await fetch('/busqueda/historial/');
+            const data = await response.json();
+            if (data.historial && data.historial.length > 0) {
+                [mobilePanelTitle, panelTitle].forEach(el => { if(el) el.textContent = 'Búsquedas recientes'; });
+                mostrarHistorialResultados(data.historial);
+            } else { mostrarHistorialVacio(); }
+        } catch(e) { mostrarHistorialVacio(); }
+    }
+
+    function mostrarHistorialResultados(historial) {
+        const html = historial.map(usuario => `
+            <div class="p-4 border-b border-gray-100 flex items-center gap-3">
+                <svg width="16" height="16" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="flex-1 flex items-center gap-3 cursor-pointer min-w-0 hover:opacity-75" onclick="seleccionarUsuario('${usuario.id}','${escapeHtml(usuario.nombre)}','${usuario.tipo}')">
+                    ${usuario.foto ? `<img src="${usuario.foto}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">` :
+                    `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-white flex-shrink-0">${getEmojiPorTipo(usuario.tipo)}</div>`}
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold text-gray-800 text-sm truncate">${escapeHtml(usuario.nombre)}</p>
+                        <p class="text-xs text-gray-500">${usuario.tipo_display}</p>
+                    </div>
+                </div>
+                <button onclick="eliminarDelHistorial(event,'${usuario.id}')" class="p-2 hover:bg-gray-100 rounded-full transition">
+                    <svg width="14" height="14" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        `).join('');
+        [searchResults, mobileSearchResults].forEach(el => { if(el) { el.classList.remove('hidden'); el.innerHTML = html; } });
+        [noResults, mobileNoResults, emptyHistory, mobileEmptyHistory].forEach(el => el?.classList.add('hidden'));
+    }
+
+    async function seleccionarUsuario(id, nombre, tipo) {
+        try {
+            await fetch('/busqueda/guardar/', { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')}, body: JSON.stringify({usuario_id:id,nombre,tipo}) });
+        } catch(e) {}
+        try {
+            const response = await fetch(`/busqueda/obtener-documento/${id}/`);
+            const data = await response.json();
+            if (data.documento) window.location.href = `/perfil/ver/${data.documento}/`;
+        } catch(e) {}
+    }
+
+    async function eliminarDelHistorial(event, usuarioId) {
+        event.stopPropagation();
+        try {
+            await fetch('/busqueda/eliminar/', { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')}, body: JSON.stringify({usuario_id:usuarioId}) });
+            if (currentQuery.length === 0) cargarHistorial();
+        } catch(e) {}
+    }
+
+    async function limpiarHistorialCompleto() {
+        if (!confirm('¿Estás seguro de que quieres limpiar todo el historial?')) return;
+        try {
+            await fetch('/busqueda/limpiar/', { method:'POST', headers:{'X-CSRFToken':getCookie('csrftoken')} });
+            mostrarHistorialVacio();
+        } catch(e) {}
+    }
+
+    function mostrarPanel(mobile) { (mobile ? mobileSearchPanel : searchPanel)?.classList.remove('hidden'); }
+    function ocultarPanel(mobile) { (mobile ? mobileSearchPanel : searchPanel)?.classList.add('hidden'); }
+
+    function mostrarLoading(mobile) {
+        (mobile ? mobileSearchLoading : searchLoading)?.classList.remove('hidden');
+        (mobile ? mobileSearchResults : searchResults)?.classList.add('hidden');
+        (mobile ? mobileNoResults : noResults)?.classList.add('hidden');
+        (mobile ? mobileEmptyHistory : emptyHistory)?.classList.add('hidden');
+    }
+
+    function ocultarLoading(mobile) { (mobile ? mobileSearchLoading : searchLoading)?.classList.add('hidden'); }
+
+    function mostrarSinResultados(mobile) {
+        (mobile ? mobileNoResults : noResults)?.classList.remove('hidden');
+        (mobile ? mobileSearchResults : searchResults)?.classList.add('hidden');
+        (mobile ? mobileEmptyHistory : emptyHistory)?.classList.add('hidden');
+    }
+
+    function mostrarHistorialVacio() {
+        [emptyHistory, mobileEmptyHistory].forEach(el => el?.classList.remove('hidden'));
+        [searchResults, mobileSearchResults, noResults, mobileNoResults].forEach(el => el?.classList.add('hidden'));
+        [panelTitle, mobilePanelTitle].forEach(el => { if(el) el.textContent = 'Búsquedas recientes'; });
+    }
+
+    function limpiarBusqueda(mobile) {
+        if (mobile) { mobileSearchInput.value=''; clearMobileSearchBtn?.classList.add('hidden'); }
+        else { searchInput.value=''; clearSearchBtn?.classList.add('hidden'); }
+        currentQuery=''; cargarHistorial();
+    }
+
+    function resaltarTexto(texto, query) {
+        if (!query) return escapeHtml(texto);
+        return escapeHtml(texto).replace(new RegExp(`(${escapeRegex(query)})`,'gi'), '<span class="bg-yellow-200 font-semibold px-0.5 rounded">$1</span>');
+    }
+
+    function getEmojiPorTipo(tipo) { return {'aprendiz':'🎓','instructor':'👨‍🏫','bienestar':'🏥'}[tipo]||'👤'; }
+    function escapeHtml(t) { return t.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+    function escapeRegex(t) { return t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+    </script>
+
+    <!-- MODALES MEDIA -->
+    <script>
+    const publicacionesMedia = {};
+
+    window.inicializarMediaPublicacion = function(publicacionId, archivos) {
+        publicacionesMedia[String(publicacionId)] = archivos;
+    };
+
+    window.abrirMediaModal = function(publicacionId, index) {
+        const key = String(publicacionId);
+        const archivos = publicacionesMedia[key];
+
+        if (!archivos || archivos.length === 0) {
+            console.warn('No hay archivos para publicacion:', publicacionId);
+            return;
         }
 
-    function compartir(id) {
-        const url = window.location.origin + "/publicaciones/" + id + "/";
-        if (navigator.share) navigator.share({title:"InfoSena", url:url});
-        else navigator.clipboard.writeText(url).then(() => mostrarToast("✅ Enlace copiado","success"));
-    }
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('[id^="modal-"]').forEach(m => { if (!m.classList.contains('modal-media')) m.classList.add('hidden'); });
-            document.body.style.overflow = 'auto';
+        const existente = document.getElementById('mediaModalOverlay');
+        if (existente) existente.remove();
+
+        let currentIndex = parseInt(index) || 0;
+        if (currentIndex >= archivos.length) currentIndex = 0;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'mediaModalOverlay';
+        overlay.style.cssText = `
+            position:fixed; inset:0;
+            background:rgba(0,0,0,0.95);
+            z-index:99999;
+            display:flex; align-items:center; justify-content:center;
+        `;
+
+        const btnCerrar = document.createElement('button');
+        btnCerrar.dataset.action = 'cerrar';
+        btnCerrar.style.cssText = `
+            position:absolute; top:16px; right:16px;
+            width:44px; height:44px; border-radius:50%;
+            background:rgba(255,255,255,0.15); border:none;
+            color:white; font-size:1.6rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            z-index:100; line-height:1;
+        `;
+        btnCerrar.textContent = '×';
+
+        const contador = document.createElement('div');
+        contador.id = 'mediaContador';
+        contador.style.cssText = `
+            position:absolute; top:16px; left:50%; transform:translateX(-50%);
+            background:rgba(0,0,0,0.6); color:white;
+            padding:6px 16px; border-radius:20px;
+            font-size:0.85rem; font-weight:600; z-index:100;
+            display: ${archivos.length > 1 ? 'block' : 'none'};
+        `;
+
+        const btnPrev = document.createElement('button');
+        btnPrev.dataset.action = 'prev';
+        btnPrev.style.cssText = `
+            position:absolute; left:16px; top:50%; transform:translateY(-50%);
+            width:48px; height:48px; border-radius:50%;
+            background:rgba(255,255,255,0.2); border:none;
+            color:white; font-size:2rem; cursor:pointer;
+            display:${archivos.length > 1 ? 'flex' : 'none'};
+            align-items:center; justify-content:center; z-index:100;
+        `;
+        btnPrev.innerHTML = '&#8249;';
+
+        const btnNext = document.createElement('button');
+        btnNext.dataset.action = 'next';
+        btnNext.style.cssText = `
+            position:absolute; right:16px; top:50%; transform:translateY(-50%);
+            width:48px; height:48px; border-radius:50%;
+            background:rgba(255,255,255,0.2); border:none;
+            color:white; font-size:2rem; cursor:pointer;
+            display:${archivos.length > 1 ? 'flex' : 'none'};
+            align-items:center; justify-content:center; z-index:100;
+        `;
+        btnNext.innerHTML = '&#8250;';
+
+        const contenedor = document.createElement('div');
+        contenedor.id = 'mediaContenedor';
+        contenedor.style.cssText = `
+            display:flex; align-items:center; justify-content:center;
+            max-width:90vw; max-height:90vh;
+        `;
+
+        overlay.appendChild(btnCerrar);
+        overlay.appendChild(contador);
+        overlay.appendChild(btnPrev);
+        overlay.appendChild(btnNext);
+        overlay.appendChild(contenedor);
+
+        function renderArchivo() {
+            const videoAnterior = contenedor.querySelector('video');
+            if (videoAnterior) videoAnterior.pause();
+            contenedor.innerHTML = '';
+            const archivo = archivos[currentIndex];
+
+            if (archivo.tipo === 'imagen') {
+                const img = document.createElement('img');
+                img.src = archivo.url;
+                img.alt = archivo.alt || 'Imagen';
+                img.style.cssText = 'max-width:90vw; max-height:85vh; object-fit:contain; border-radius:8px; display:block;';
+                contenedor.appendChild(img);
+            } else if (archivo.tipo === 'video') {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.style.cssText = 'max-width:90vw; max-height:85vh; border-radius:8px; display:block; background:#000;';
+                const source = document.createElement('source');
+                source.src = archivo.url;
+                video.appendChild(source);
+                contenedor.appendChild(video);
+            }
+
+            contador.textContent = `${currentIndex + 1} / ${archivos.length}`;
+            btnPrev.style.opacity = currentIndex === 0 ? '0.3' : '1';
+            btnPrev.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+            btnNext.style.opacity = currentIndex === archivos.length - 1 ? '0.3' : '1';
+            btnNext.style.pointerEvents = currentIndex === archivos.length - 1 ? 'none' : 'auto';
         }
+
+        overlay.addEventListener('click', function(e) {
+            const action = e.target.closest('[data-action]')?.dataset.action;
+            if (action === 'cerrar') {
+                cerrarMediaModal();
+            } else if (action === 'prev') {
+                if (currentIndex > 0) { currentIndex--; renderArchivo(); }
+            } else if (action === 'next') {
+                if (currentIndex < archivos.length - 1) { currentIndex++; renderArchivo(); }
+            } else if (e.target === overlay) {
+                cerrarMediaModal();
+            }
+        });
+
+        renderArchivo();
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+    };
+
+    function cerrarMediaModal() {
+        const overlay = document.getElementById('mediaModalOverlay');
+        if (overlay) {
+            overlay.querySelector('video')?.pause();
+            overlay.remove();
+        }
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const overlay = document.getElementById('mediaModalOverlay');
+        if (!overlay) return;
+        if (e.key === 'Escape')     cerrarMediaModal();
+        if (e.key === 'ArrowLeft')  overlay.querySelector('[data-action="prev"]')?.click();
+        if (e.key === 'ArrowRight') overlay.querySelector('[data-action="next"]')?.click();
     });
     </script>
 
