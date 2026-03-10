@@ -1,20 +1,62 @@
-# Python
-__pycache__/
-*.pyc
+# =============================================
+# .gitignore para InfoSENA (Django + MySQL + Redis)
+# =============================================
 
-# Django
-*.sqlite3
-/staticfiles/
-/media/
-
-# Env
-env/
+# ---- Entorno Virtual de Python ----
 venv/
+env/
+.venv/
+ENV/
+SENA/
+Lib/
+Scripts/
+Include/
+pyvenv.cfg
 
-# VSCode
-.vscode/
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
 
-# OS
-.DS_Store
-
+# ---- Variables de entorno (SECRETOS) ----
 .env
+.env.local
+.env.production
+.env.*.local
+
+# ---- Django ----
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+
+# ---- Media (archivos subidos por usuarios) ----
+media/chat_archivos/
+media/grupos/
+media/perfiles/
+media/perfils/
+media/publicaciones/
+
+# ---- MySQL ----
+*.sql
+*.sql.gz
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---- Sistema Operativo ----
+*.tmp
+*.bak
+*.orig
